@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/11047
+백준 11047 동전 0
+
+유형 : 그리디 (DP로도 풀이가 가능하다.)
+그리디는 매번 선택에서 '근시안적으로' 가장 최적의 답을 가져온다.
+그리디의 한계 : 매번 선택의 합이 문제 전체의 최적 답이 아닌 경우가 많다.
+동전 0 문제에서 그리디 풀이가 최적 답이 되는 이유 : 1 ≤ Ai ≤ 1,000,000, A1 = 1, i ≥ 2인 경우에 Ai는 Ai-1의 배수 라는 조건 때문
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String input = br.readLine();
+        StringTokenizer st = new StringTokenizer(input);
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+
+        int output = 0;
+        List<Integer> inputList = new ArrayList<>();
+        
+        //입력
+        for(int i=0; i<N; i++){
+            int digit = Integer.parseInt(br.readLine());
+            if(K<digit) continue;
+            else if (K==digit) {
+                System.out.println("1");
+                return;
+            }
+            else inputList.add(digit);
+        }
+
+        //역순 정렬
+        inputList.sort(Comparator.reverseOrder());
+
+        //그리디 : 매 번 선택에서 최적의 해를 찾는다.
+        for(int i=0; i<inputList.size(); i++){
+            output += K/inputList.get(i);
+            K = K%inputList.get(i);
+            if(K==0) break;
+        }
+
+        System.out.println(output);
+
+    }
+}

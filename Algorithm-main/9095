@@ -1,0 +1,62 @@
+https://www.acmicpc.net/problem/9095
+1, 2, 3 더하기 
+DP 유형
+
+- 초기값을 세울 때 (arr[1], arr[2], arr[3]) 집중하고 계산해야 한다.
+- 초기값을 잘못 입력하게 되면 점화식도 도출되지 않는다.
+
+D[1] = 1
+D[2] = 2
+D[3] = 4
+
+
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        int n = Integer.parseInt(br.readLine());
+        List<Integer> testCase = new ArrayList<>();
+        for(int i=0; i<n; i++){
+            int input = Integer.parseInt(br.readLine());
+            testCase.add(input);
+        }
+
+        List<Integer> output = new ArrayList<>();
+        for(int i=0; i<n; i++) {
+            int num = testCase.get(i);
+            if(num<4){
+                int out = 0;
+                switch (num){
+                    case 0 : out = 0; break;
+                    case 1 : out = 1; break;
+                    case 2 : out = 2; break;
+                    case 3 : out = 4; break;
+                }
+                output.add(out);
+            }
+            else {
+                int[] arr = new int[num + 1];
+                arr[0] = 0;
+                arr[1] = 1;
+                arr[2] = 2;
+                arr[3] = 4;
+                for (int j = 4; j < arr.length; j++) {
+                    arr[j] = arr[j - 1] + arr[j - 2] + arr[j - 3];
+                }
+                output.add(arr[num]);
+            }
+        }
+
+        for(int i:output) {
+            bw.write(i + "\n");
+        }
+        bw.flush();
+        bw.close();
+
+    }
+}

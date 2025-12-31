@@ -1,0 +1,97 @@
+내가 작성한 코드 : 시간 복잡도 O(N*3)
+코드에 문제가 참 많다.
+
+
+
+import java.util.*;
+
+
+
+public class Main {
+    public static void main(String[] args) {
+        //입력
+        Scanner sc = new Scanner(System.in);
+        int N = sc.nextInt();
+        sc.nextLine();
+        String[] sArr = new String[N];
+        for(int i=0; i<N; i++) {
+            sArr[i] = sc.nextLine();
+        }
+
+
+
+        char[] result = new char[sArr[0].length()];
+
+
+
+        //비즈니스 로직
+
+
+
+        for(int i=0; i<N-1; i++){
+            char[] compare = new char[N];
+
+
+
+            for(int j=0; j<sArr[0].length(); j++){
+                for(int z=0; z<N; z++){
+                    compare[z] = sArr[z].toCharArray()[j];
+                }
+                for(int z=0; z<N-1; z++){
+                    if(compare[z]==compare[z+1]) result[j] = compare[z];
+                    else{
+                        result[j] = '?';
+                        break;
+                    }
+                }
+            }
+        }
+
+
+
+        //출력
+        StringBuilder sb = new StringBuilder();
+        String r = "";
+        for(int i=0; i<result.length; i++) r = sb.append(result[i]).toString();
+
+
+
+        if(N==1) System.out.println(sArr[0]);
+        else System.out.println(r);
+    }
+}
+
+
+
+- 첫 번째 for문 : 입력들을 비교 N-1번 수행
+- 두 번째 for문 : 각 문자열의 j번째 문자들을 선택
+- 세 번째 for문 : 같은 순서의 문자(j번째)들을 compare 배열에 값 할당
+- 네 번째 for문 : compare 배열에서 문자들이 서로 다른지 비교
+
+
+
+시니어님의 해설 중 중요한 부분
+  for (int i = 0; i < files[0].length(); i++) {
+            char ch = files[0].charAt(i);
+            boolean same = true;
+            
+            for (int j = 1; j < n; j++) {
+                if (files[j].charAt(i) != ch) {
+                    same = false;
+                    break;
+                }
+            }
+            
+            sb.append(same ? ch : '?');
+        }
+
+
+
+- 첫 번째 string 입력의 맨 첫 문자를 기준으로 잡았다.
+- 두 번째 string 입력부터 첫 문자를 기준 문자와 비교, 다를 경우 false 후  for문 탈출
+
+
+
+나에게 부족한 부분 
+- O(N*3)을 충분히 O(N*2)로 설계할 수 있을텐데 고민하지 않은 점 (제출에만 신경을 썼다.)
+- BufferReader 사용하기

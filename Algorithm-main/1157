@@ -1,0 +1,88 @@
+
+백준 1157 단어 공부
+https://www.acmicpc.net/problem/1157
+
+
+------------------------------------------------------------------------------------------
+<내가 짠 코드>
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String input = sc.nextLine();
+
+        String inputLower = input.toLowerCase(Locale.ROOT);
+        char[] c = inputLower.toCharArray();
+
+        int[] lower = new int[26];
+        for(int i=0; i<c.length; i++) {
+            lower[(int)c[i]-97]++;
+        }//입력 길이 n만큼 순회
+
+        int max = 0;
+        for(int i=0; i<lower.length; i++){
+            if(max<lower[i]) max = lower[i];
+        }//26번 순회
+
+        int count = 0;
+        for(int i=0; i<lower.length; i++){
+            if(max==lower[i]) count++;
+        }//26번 순회
+
+        if(count>1) System.out.println("?");
+        else {
+            for(int i=0; i<lower.length; i++){//26번 순회(최악)
+                if(max==lower[i]) {
+                    char output = 'A';
+                    System.out.println((char) (output+i));
+                    break;
+                }
+            }
+        }
+        sc.close();
+    }
+}
+
+------------------------------------------------------------------------------------------
+<다른 사람이 짠 코드> (rndnjswk123)
+import java.io.IOException;
+import java.io.InputStream;
+
+class Main{
+    
+    static final byte A64 = (byte)64;//숫자 64를 int형에서 byte형으로 변환
+    
+    public static void main(String[] args) throws IOException{
+        InputStream is = System.in;//입력
+        byte[] buf = new byte[1000003];//바이트 타입 배열 선언, 입력 크기보다 조금 더 큰 1000003의 크기
+        is.read(buf);//입력을 읽어 배열에 담는다.
+        
+        int[] cnt = new int[27];//알파벳과 매핑되는 배열, 알파벳이 몇 번 나왔는지에 대한 정보가 들어가있다.
+        
+        for(int i=0; buf[i]>A64; i++) cnt[buf[i]&31]++;
+        //반복 조건 : buf[i] > A64 = 입력 배열이 64보다 클 때 : 아스키코드 65번부터 읽어들인다.
+        //buf[i] : 입력 문자의 아스키코드
+
+        //31의 이진수 = 11111(2)
+        //'A' (65)의 이진수 : 1000001(2)
+        //'a' (97)의 이진수 : 1100001(2)
+
+        //&31 연산을 하면 이 차이나는 6번째 비트가 모두 0으로 바뀌면서 마지막 5개 비트만 남게 된다.
+        //'A' (65) & 31 (1000001 & 11111) = 0000 0001 (10진수로 1이 남는다.)
+        //'a' (97) & 31 (1100001 & 11111) = 0000 0001 (10진수로 1이 남는다.)
+        //'B' (66) & 31 (1000010 & 11111) = 0000 0010 (10진수로 2가 남는다.)
+        //'b' (98) & 31 (1100010 & 11111) = 0000 0010 (10진수로 2가 남는다.)
+
+        //cnt[buf[i]&31]++; 연산은 알파벳이 나올 때마다 cnt 배열의 인덱스를 +1 시킨다.
+        
+        int max_idx = 0, same_idx = 0;
+        for(int i=1; i<27;i++){
+            if(cnt[max_idx]<cnt[i]) max_idx = i;
+            else if(cnt[max_idx]==cnt[i]) same_idx = i;
+        }
+
+        if(cnt[max_idx]==cnt[same_idx]) System.out.print('?');
+        else System.out.print((char)(max_idx+64));//1부터 인덱스가 시작되기에 64를 더한다.
+    }
+}

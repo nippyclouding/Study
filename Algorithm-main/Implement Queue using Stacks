@@ -1,0 +1,121 @@
+https://leetcode.com/problems/implement-queue-using-stacks/description/
+
+내가 설계한 코드
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Stack;
+
+public class MyQueue {
+
+    private final Stack<Integer> stack1;
+    private final Stack<Integer> stack2;
+
+    public MyQueue() {
+        stack1 = new Stack<>();
+        stack2= new Stack<>();
+    }
+
+    public void push(int x) {
+        stack1.push(x);
+    }
+
+    public int pop() {
+        if(stack2.isEmpty()){
+            List<Integer> temp = new ArrayList<>(stack1);
+            Collections.reverse(temp);
+            stack2.addAll(temp);
+            stack1.clear();
+        }
+        return stack2.pop();
+    }
+
+    public int peek() {
+        if (stack2.isEmpty()) {
+            List<Integer> temp = new ArrayList<>(stack1);
+            Collections.reverse(temp);
+            stack2.addAll(temp);
+            stack1.clear();
+        }
+        return stack2.peek();
+    }
+
+    public boolean empty() {
+        if(stack2.isEmpty()&&stack1.isEmpty()) return true;
+        else return false;
+    }
+}
+
+
+시니어님의 코드
+class MyHashMap {
+    private static final int SIZE = 10000;
+    private Node[] buckets;
+
+    private static class Node {
+        int key, value;
+        Node next;
+        Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    public MyHashMap() {
+        buckets = new Node[SIZE];
+    }
+
+    private int getIndex(int key) {
+        return key % SIZE;
+    }
+
+    public void put(int key, int value) {
+        int idx = getIndex(key);
+        if (buckets[idx] == null) {
+            buckets[idx] = new Node(key, value);
+            return;
+        }
+
+        Node curr = buckets[idx];
+        Node prev = null;
+        while (curr != null) {
+            if (curr.key == key) {
+                curr.value = value; 
+                return;
+            }
+            prev = curr;
+            curr = curr.next;
+        }
+        prev.next = new Node(key, value); 
+    }
+
+    public int get(int key) {
+        int idx = getIndex(key);
+        Node curr = buckets[idx];
+        while (curr != null) {
+            if (curr.key == key) {
+                return curr.value;
+            }
+            curr = curr.next;
+        }
+        return -1;
+    }
+
+    public void remove(int key) {
+        int idx = getIndex(key);
+        Node curr = buckets[idx];
+        Node prev = null;
+        while (curr != null) {
+            if (curr.key == key) {
+                if (prev == null) {
+                    buckets[idx] = curr.next; 
+                } else {
+                    prev.next = curr.next; 
+                }
+                return;
+            }
+            prev = curr;
+            curr = curr.next;
+        }
+    }
+}

@@ -1,0 +1,250 @@
+CSS : Cascading Style Sheets 
+HTML 웹 문서의 스타일을 표현하는 언어
+HTML 코드로 작성된 웹 요소들이 어떻게 표시되어야 할 지를 정의한다.
+
+
+------------------------------------------------------------------------------------------------------------------------------
+
+CSS는 Selector(선택자), 속성, 속성값 으로 구성되어 있다.
+CSS의 주석 : /*  ...  */
+
+body{
+  font-size : 9pt;
+}
+
+body : 선택자
+font-size : 속성
+9pt : 속성값
+
+=> body 안에 들어간 글자들은 모두 9pt가 적용된다.
+
+<html>
+  <body>
+    <h1>...</h1>
+    <p> ... </p>
+  </body>
+</html>
+
+body{ font-sizze: 9pt; }
+h1{ font-weight:bold; color:green; }
+p{ marjin:5px; font-size:8p; }
+
+- html의 태그에 각각 CSS를 적용시킬 수 있다.
+
+CSS 적용 방법
+1. CSS 파일을 html 파일 헤더에 import를 하여 CSS를 적용할 수 있다. (권장)
+- <link rel="stylesheet" href="파일 이름.css">
+- <link rel="stylesheet" href="style.css"> 
+- link rel="stylesheet" 까지는 고정, 이후 href에 css 파일 이름을 넣어야 한다.
+
+2. CSS 속성을 html 파일 헤더에 작성하여 CSS를 적용할 수 있다.
+- <style> ... </style>
+<head>
+  <style> 
+    body{ font-sizze: 9pt; } 
+  </style>
+</head>
+
+3. CSS 속성을 html 태그와 섞어 사용할 수 있다. (임시적으로 지정 시 사용)
+- style = "...;"
+<h1 style="color: blue;">안녕하세요, 인라인 스타일입니다!</h1>
+
+
+배경화면 CSS 처리
+background : 배경화면 설정
+background-image : url( ... ); => 이미지를 찾아 배경화면으로 사용한다.
+background-size : cover; => 화면 중앙으로 배치된다.
+
+body{
+    background-image: url('IMG_4980.jpg');
+    background-size: cover;
+    }
+
+------------------------------------------------------------------------------------------------------------------------------
+
+<폰트 스타일>
+
+- color : 글자 색 
+- font-family : 글씨체 
+- font-size : 폰트 사이즈 pt, px, em .. 
+- font-weight: 폰트 굵기
+- line-height: 폰트 간격 %, px
+
+
+1. color
+body{
+  color : rgb(0,0,0);
+}
+
+color - rgb : 10진수로 색깔을 표현 rgb(0,0,0) ~ rgb(255,255,255)
+color -rgba : rgb + 투명도를 표현 rgba(0,0,0,0) ~ rgba(255,255,255,1.0)
+
+2. font-family 
+- 폰트 명에 띄워쓰기가 있을 경우 ""를 사용
+- 영문 폰트는 쉽게 적용 가능하지만 한글 폰트는 제약이 많다.
+- 클라이언트 사양에 따라 없는 폰트가 있을 수도 있다.
+
+body{
+  font-family : "Times New Roman";
+}
+
+body{
+  font-family : serit;
+}
+기본 폰트 종류 : 돋움, 굴림, 고딕, 궁서, serif, sans-serif, cursive, monospace
+=> 클라이언트 사양에서 설정 폰트가 없을 경우를 대비한 기본값
+
+h1 {
+    font-family: "Nanum Myeongjo", Georgia, serif;  
+    /* 먼저 나눔명조를 찾고, 없으면 Georgia, 그것도 없으면 시스템의 세리프 폰트를 사용 */
+}
+
+
+3. font-size
+- px : 화면의 픽셀 개수 단위
+- pt : 포인트 단위
+- em : 상대 크기 (기존에 사용된 크기에 비해 얼마의 비율로 결정할 지, 1.0em = 100%)
+- % : 상대 크기, 부모 요소의 컨테이너 크기에서 어느 정도의 크기를 차지할지
+
+
+문장, 문단과 관련된 스타일
+text-align : 정렬 방식, left right center justify
+- text-align : left; 왼쪽 정렬
+- text-align : right; 오른쪽 정렬
+- text-align : center; 중앙 정렬
+- text-align : justify; 균등 정렬
+
+text-indent : 첫 글자 들여쓰기 수준, px값을 이용해 들여쓰기
+- text-indent : 16px;
+ body{
+  font-size : 10px;
+  text-indent : 10px; /* 한 글자 들여쓰기 */
+}
+
+text-decoration : 글자 장식
+- underline : 밑줄
+- overline : 윗줄
+- line-through : 삭제 표기의 줄 (관통하는 줄)
+
+4. font width 너비, height 높이
+- px, % 단위를 주로 사용한다.
+- px : 절댓값 
+- % : 상댓값
+부모 요소가 500px일 때 자식 요소가 50%일 경우 자식 요소는 250px이 된다.
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------
+css 예시
+main.css
+h1{
+  text-align: center;
+  font-size:18px;
+  font-weight:900;
+  color:rgb(48, 48, 48);
+  lign-height:30px;
+}
+
+a, a:visited{
+  color:rgb(80, 176, 176)
+  text-decoration: none;
+  font-weight : 800;
+}
+/*:visited: <a> 태그의 '가상 클래스(Pseudo-class)' 중 하나, 사용자가 한 번이라도 방문했던 링크를 의미*/
+/*브라우저의 방문 기록에 남아있는 링크를 의미*/
+
+img{
+  width:100px;
+  height: auto;
+------------------------------------------------------------------------------------------------------------------------------
+css 셀렉터
+h1{ ... }을 적용 시 html 내 모든 h1에게 적용이 된다.
+h1이라도 구분하며 css를 적용하고 싶을 때 css 셀렉터의 선택자를 사용한다.
+=> tag, id, class 선택자
+
+- tag : html 문서의 모든 특정 태그를 선택할 때 사용, 일반적으로 쓰는 css
+h1 { ... } 
+
+- id : html 문서 중 하나의 요소를 특정해서 선택할 때 사용, html 태그 속성으로 id(식별자)를 지정, 선언, 하나의 id는 문서 내 하나만 존재해야 한다.
+html : <p id="description-text-1"></p>   
+css : #description-text-1{ ... } 
+id 속성은 css에서 표현할 때 #을 앞에 붙인다. id에 해당하는 요소인 p 태그에만 css가 적용된다.
+
+- class : 같은 스타일을 여러 곳에 한 번에 지정
+일반 css는 선언한 태그에 반드시 모두 적용되지만 class 스타일은 css를 선언하고 적용하고 싶은 곳에 선언하면 된다.
+하나의 클래스는 문서 내 여러 개에 지정 가능
+html
+<p class ="description-text"></p>
+<p class ="description-text"></p>
+<p class ="description-text"></p>
+css : 맨 앞에 점을 붙인다.
+.description-text{ ... } 
+
+
+기본 셀렉터를 응용한 셀렉터
+
+1. 조합 셀렉터 : 특정 요소 하위에 있는 요소를 선택한다.
+자식 조합 셀렉터 : > 기호 사용, 계층적으로 한 단계 아래에 있을 떄만 자식 조합 선택자 사용 가능
+자손 조합 셀렉터 : " " 띄어쓰기 사용, 계층적으로 하위에 있기만 하면 자손 조합 선택자 사용 가능
+
+html
+<div>
+  <h1>
+      <i>
+        hello
+      </i>
+  </h1>
+</div>  
+
+css
+h1 > i {
+color : red;
+...
+}
+
+자식 조합 셀렉터
+=> 모든 i 태그에 적용되는 것이 아닌, h1의 자식으로 위치한 i 태그에만 css가 적용된다.
+div의 자손은 h1, i
+h1의 자식, 자손은 i
+
+.container > .item { ... }
+container라는 class 셀렉터의 자식인 item class 셀렉터에만 css가 적용된다.
+
+.container .item { ... }
+container라는 class 셀렉터의 하위에 있는(자손) item class 셀렉터에만 css가 적용된다.
+
+
+
+
+2. 상태 셀렉터 : 요소가 특정 상태가 되었을 때만 적용된다, : 기호 사용
+반응 셀렉터 : hover(마우스가 요소 위에 있을 때), active(활성화), visited(이전에 방문 링크) 등
+상태 셀렉터 : focus(입력 상태 적용), enabled(사용 가능), disable(사용 불가능) 등,  input 태그에서 자주 사용
+
+a:hover{
+color:blue;
+}
+a:visited {
+    color: black;
+}
+<a> 태그의 링크가 기본적으로 blue 색으로 보여지고, 방문했을 경우 black 색으로 보여진다.
+
+input:focus{
+color : blue;
+}
+<input> 입력칸 안에 마우스가 올라갈 경우 입력칸 색이 blue로 변한다.
+
+
+
+3. 특성 셀렉터 : 요소에 부여된 특성의 존재 여부, 그 값에 따라 선택, 대괄호를 사용해 특성 지정
+요소에 부여된 특성의 존재 여부, 그 값에 따라 선택
+대괄호를 사용해 특성 지정
+a[href] { ... }
+a 태그에 href 속성이 있을 경우
+a[href="https://www.google.com"]{ ... }
+a 태그에 해당 링크가 있을 경우
+
+
+조합 셀렉터(자식, 자손): 두 개 이상의 선택자를 합친다.
+상태, 특성 셀렉터 : 한 개의 선택자에 조건을 지정
+

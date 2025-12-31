@@ -1,0 +1,99 @@
+문자열
+
+내가 짠 코드
+- 아스키코드를 활용했다.
+- 결과를 담는 result를 int[] 배열로 선언했는데, 생각해보니 ArrayList도 인덱스로 접근이 가능했다.
+리스트로 접근했다면 더 나은 성능이 나왔을 것이다. 
+- 기존에는 char[] c = s.toCharArray() 를 활용헀는데 백준에서 계속 런타임 에러가 나서 char c = s.charAt(i); 로 변경하였다.
+=> charAt(i) : String 타입의 변수 중 i번째 문자를 리턴한다.
+
+
+
+import java.util.Scanner;
+
+
+
+public class Main {
+    public static void main(String[] args) {
+
+
+
+        Scanner sc = new Scanner(System.in);
+
+
+
+        int[] result = new int[4];
+
+
+
+        while(sc.hasNextLine()) {
+            String s = sc.nextLine();
+
+
+
+            int Upper = 0;
+            int smaller = 0;
+            int num = 0;
+            int space = 0;
+
+
+
+            for(int i=0; i<s.length(); i++){
+                char c = s.charAt(i); 
+                if(c<='Z' && c >= 'A') Upper++;
+                if(c<='z' && c >= 'a') smaller++;
+                if(c<='9' && c >= '0') num++;
+                if(c==' ') space++;
+            }
+            result[0] = smaller;
+            result[1] = Upper;
+            result[2] = num;
+            result[3] = space;
+
+
+
+            for(int i : result)
+                System.out.print(i+" ");
+            System.out.println();
+        }
+    }
+}
+
+
+
+시니어님의 코드
+
+
+
+//입력
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String input;
+        while ((input = br.readLine()) != null) {    //입력이 없을 때까지
+
+
+
+            int lower = 0, upper = 0, digit = 0, space = 0; // 이렇게 한 번에 선언할 수도 있는 것을 기억하자
+
+
+
+            for (char ch : input.toCharArray()) {    //
+                if (Character.isLowerCase(ch)) lower++;
+                else if (Character.isUpperCase(ch)) upper++;
+                else if (Character.isDigit(ch)) digit++;
+                else if (ch == ' ') space++;
+            }
+            System.out.printf("%d %d %d %d%n", lower, upper, digit, space);
+        }
+    }
+
+
+
+- 입력으로  BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 를 사용 (빠른 입출력)
+- Character.isLowerCase, isUpperCase, IsDigit를 사용
+
+
+
+피드백 
+- 분명 isUpper isLower 메서드가 기억이 났는데 정확히 어떻게 쓰는지 잊어버려 아스키 코드를 사용했다.
+- Character 메서드 기억하고 익숙해지기
+- 표준 입출력 버퍼리더로 하는 습관 들이기

@@ -1,0 +1,69 @@
+climbing stairs
+
+https://leetcode.com/problems/climbing-stairs/
+
+First, i could not think of it as a DP problem, i wrote out the recursive Formula.
+
+The first input was 1, and output was 1.
+The second input was 2, and output was 2.
+And the third gave 3, the fourth 4 gave 5, the fifth gave 8, the sixth was 13.
+
+I found the rule which is "f(i) = f(i-1) + f(i-2)" and found it seems like Fibonacci sequence, DP.
+And this is my solution..
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int input = Integer.parseInt(br.readLine());
+
+
+        //bizLogic
+        if(input==1){
+            System.out.println(1);
+        }
+        else if(input==2){
+            System.out.println(2);
+        }
+        else {
+            int[] arr = new int[input + 1];
+            arr[0] = 0;
+            arr[1] = 1;
+            arr[2] = 2;
+
+            for (int i = 3; i < arr.length; i++) {
+                arr[i] = arr[i - 1] + arr[i - 2];
+            }
+
+            int output = arr[input];
+
+            System.out.println(output);
+        }
+    }
+}
+
+
+senior's solution
+public class Solution {
+    public int climbStairs(int n) {
+        if (n <= 2) return n;
+
+        int oneStepBefore = 2; // dp[2]
+        int twoStepsBefore = 1; // dp[1]
+        int allWays = 0;
+
+        for (int i = 3; i <= n; i++) {
+            allWays = oneStepBefore + twoStepsBefore;
+            twoStepsBefore = oneStepBefore;
+            oneStepBefore = allWays;
+        }
+
+        return allWays;
+    }
+}
+
+The logic was same as mine, but he didn't use an array.
+It was good that i used 'BufferedReader'.
+

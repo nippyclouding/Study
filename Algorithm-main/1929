@@ -1,0 +1,48 @@
+에라토스테네스의 체
+
+내가 짠 코드 : 경우의 수를 모두 계산한다.
+k라는 수에 대해 2 ~ K-1까지 모두 나누어본 뒤 소수를 판단한다 => 시간 초과
+
+시간초과 난 코드
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+public class Main {
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] input = br.readLine().split(" ");
+        int n1 = Integer.parseInt(input[0]);
+        int n2 = Integer.parseInt(input[1]);
+
+        int[] arr = new int[n2-n1+1];
+        for(int i=0; i<arr.length; i++){
+            arr[i] = n1;
+            n1++;
+        }
+
+        List<Integer> result = new ArrayList<>();
+        for(int i=0; i<arr.length; i++){
+            if(arr[i] == 1) continue;  // 1은 소수가 아님
+            if(arr[i] == 2) {
+                result.add(arr[i]);
+                continue;  // 2는 소수, 더 이상 체크 불필요
+            }
+            for(int j=2; j<arr[i]; j++){
+
+                if(j==arr[i]-1 && arr[i]%j!=0) result.add(arr[i]);
+                else if(arr[i]%j!=0) continue;
+                else break;
+            }
+        }
+
+        for(int i : result)
+            System.out.println(i);
+
+    }
+}
+
+에라토스테네스의 체
+

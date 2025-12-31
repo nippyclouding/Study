@@ -1,0 +1,383 @@
+HTML : HyperText Markup Language
+- 태그 라는 명령으로 웹의 요소들을 구분한다.
+
+HTML의 주석 : <!-- ... -->
+
+HTML 문서의 구조
+
+<html>
+  <header>
+  </header>
+
+  <body>
+  </body>
+</html>
+
+header : 문서의 메타 정보
+body : 사용자에게 보여질 화면을 구성
+
+크롬 - 화면 우측의 개발자 도구 - Elements 확인 : HTML 문서를 확인할 수 있다.
+
+--------------------------------------------------------------------------------------------------------------
+<기본 태그>
+
+heading 태그 : 제목
+- h1, h2, h3, h4, h5, h6 //  <h1> ... </h1>
+- h1이 가장 큰 크기의 제목, h6이 가장 작은 크기의 제목이다.
+
+paragraph 태그 : 문단
+- p // <p> ... </p>
+- <p> .. </p>로 묶인 문장들은 하나의 문단으로 화면에 보여지게 된다.
+
+break 태그 : 줄바꿈
+- br // <br> 홀태그로 사용
+
+italic 태그 : 기울임체
+- i // <i> ... </i>
+- 특정 글자에 기울임체를 적용할 때 사용
+
+strong 태그 : 굵게
+- strong // <strong> ... </strong>
+- 특정 글자를 강조할 때 사용, 내용적으로 중요한 경우 사용
+
+bold 태그 : 굵게
+- b // <b> ... </b>
+- 특정 글자를 강조할 때 사용, 시각적으로 중요한 경우 사용
+
+horizontal rule 태그 : 가로 선
+- hr // <hr> 홀태그로 사용
+
+
+<리스트 태그>
+항목들을 구분하여 나열할 때 사용
+
+List item 태그 : 항목을 구분하기 위해 사용
+- li // <li> ... </li>
+- ol, ul 태그 안에서 사용된다.
+
+Ordered list 태그 : 순서가 있는 항목 나열
+- ol // <ol> ... </ol>
+- 사용 시 <ol> <li> ... </li> </ol> 처럼 사용된다.
+- 순서가 있기 때문에 li 태그 안 항목들이 1, 2, 3 처럼 순서와 함께 표기된다.
+
+Unordered list 태그 : 순서가 없는 항목 나열
+- ul // <ul> ... </ul>
+- 사용 시 <ul> <li> ... </li> </ul> 처럼 사용된다.
+- 순서가 없기 때문에 li 태그 안 항목들이 - item1 처럼 순서 없이 표기된다.
+
+--------------------------------------------------------------------------------------------------------------
+HTML 구성 - 화면을 차지하는 형태에 따라 Block, Inline으로 구분
+
+
+Block 요소 : 내용과 관계 없이 상위 요소의 너비에 맞게 너비를 차지, 레이아웃 영역을 지정할 때 사용
+블록 요소 옆에는 다른 HTML 요소가 올 수 없다, 다른 HTML 요소가 올 경우 아래로 내려간다.
+크기 조절: width(너비), height(높이), margin(외부 여백), padding(내부 여백) 지정 가능
+Block 요소를 사용할 때는 모두 <div> ... </div>로 사용 가능하지만 가급적 의미를 내포하는 태그를 사용할 것을 권장
+
+
+- div 태그 : 모든 Block 요소들의 상위 개념, 대표적인 Block 요소
+- section 태그 : 서로 다른 내용 구성이 들어갈 영역을 구분
+- article 태그 : 동일한 내용 구성이 반복될 경우 반복을 구분
+- header 태그 : 본문 내용의 머리말 영역을 구성하기 위한 요소
+- footer 태그 : 본문 내용의 바닥글 영역을 구성하기 위한 요소
+- ul, ol, li, h1, p, table ... 등 여러 block 태그가 있다.
+
+Inline 요소 : 레이아웃에 영향을 주지 않고 일부 내용에만 적용하고 싶을 때 사용
+CSS 스타일 중 display 속성을 이용하면 기존 block 관련 태그도 inline 요소로 변경하여 사용할 수 있지만
+가급적 기본 형태에 맞게 사용하는 것을 권장
+- span 태그 : CSS 스타일과 함께 특정 내용 강조, 구분 시 사용, 대표적인 Inline 요소 (텍스트 컨테이너)
+- a 태그 : 링크
+- img 태그 : 이미지
+- strong, b, i, input, label 등 여러 Inline 태그가 있다.
+
+
+
+- a 태그 : anchor, 링크, 특정 내용에 링크를 생성할 때 사용
+href(hyper reference) 속성으로 이동할 리소스 지정
+<a href="이동할 url ... "> 페이지 이동 </a>  
+=> '페이지 이동'을 누르면 지정 url로 이동한다.
+get 방식으로 url에 자원 요청
+
+- img 태그 : 이미지 삽입 시 사용
+src(source) 속성으로 이미지 주소 지정, 홀태그 사용
+<img src="이미지 주소"/>
+
+- embed 태그 : 외부 컨텐츠 삽입 (유튜브, 플래시 ..)
+src(source) 속성으로 이미지 주소 지정, 홀태그 사용
+<embed src="객체 주소"/>
+
+
+
+
+<표 태그>
+- table : 표의 시작과 끝
+- caption : 표의 제목, 설명 표 태그에서 한 번만 사용 가능,thead 위, table 아래 위치
+
+- thead : 표의 헤더를 정의하는 공간 선언(선택)
+- tbody : 표의 본문을 정의하는 공간 선언(선택)
+- tfooter : 표의 바닥글을 정의하는 공간 선언(선택)
+
+- tr : row, 표의 행
+- th : head, 표의 헤더, 속성명
+- td : data, 표의 실제 데이터
+
+ <table>
+        <caption>표 제목</caption>
+
+        <thead>
+            <tr>
+                <th>속성명1</th>
+                <th>속성명2</th>
+                <th>속성명3</th>
+                <th>속성명4</th>
+                <th>속성명5</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>data1-1</td>
+                <td>data1-2</td>
+                <td>data1-3</td>
+                <td>data1-4</td>
+                <td>data1-5</td>
+            </tr>
+            <tr>
+                <td>data2-1</td>
+                <td>data2-2</td>
+                <td>data2-3</td>
+                <td>data2-4</td>
+                <td>data2-5</td>
+            </tr>
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td colspan="n">가로 방향으로 셀을 n칸 합친다.(열 합치기)</td>
+                <--! 행 합치기 : td rowspan="n"-->
+                <td></td>
+            </tr>
+        </tfoot>
+
+    </table>
+
+
+--------------------------------------------------------------------------------------------------------------
+
+<form 태그>
+
+
+form : 사용자에게 데이터를 입력 받기 위한 구성
+-	사용 : <form> … </form>
+-	예시 
+<form action=”/signUp” method=”post”> 
+      …	
+</form>
+
+컨트롤러의 /signUp으로 post 요청을 보낸다.
+	action : 데이터를 전송할 url
+	method : 데이터를 전송할 방법(get, post ..)
+	enctype : 데이터 전송 인코딩 형식 
+- 일반 데이터에서 사용하지 않고 image 등 특별한 파일 전송 방식에서 사용되는 속성
+- 기본값 : application/x-www-from-urlencoded 적용 => 일반 텍스트 데이터만 전송, 파일 업로드 불가
+multipart/form-data 로 설정 시 이미지(PNG, JPG, PDF 등 모든 파일 형식 지원), 문서 등 바이너리 파일 전송 시 사용된다.
+
+Ex 
+<form action=”/signUp” method=”post” enctype = “multipart/form-data”>
+
+form과 관련 태그
+
+-	input : 홀태그로 사용
+입력을 받는 태그 (약관 동의 체크 박스, 라디오 버튼 등)
+<input type =”text” name =”username” placeholder=”사용자 이름”>
+	type = “text” 일반 텍스트 입력 창
+	name=”username" 서버로 전송할 변수명
+	placeholder=”사용자 이름” 입력창에 흐릿하게 보이는 안내 문구
+	텍스트 입력창에 “사용자 이름” 이라는 회색 글씨가 보여진다.
+
+type에는 text, password, button, submit, radio, checkbox, HTML 5부터 number, data, range도 추가되며 여러 항목을 쓸 수 있게 되었다.
+- text : 문자열
+- password : 입력 시 마스킹이 되면서 입력된다.
+
+
+-	button : input과 같이 사용 가능, 혼자 쓸 때는 쌍태그로 사용
+<div class=”btn-group-bottom”>
+		<button type=”submit” class=”btn btn-info btn-lg”>회원가입</button>
+		<a href=”/” class = btn btn-warning btn-lg>뒤로</a>
+</div>
+	버튼을 만드는 태그
+	type=”submit” 을 할 경우 폼 제출 버튼이 생성된다. 폼 제출 버튼은 페이지 이동, type = "button"은 페이지 이동이 없다.
+	btn : Bootstrap 스타일, CSS
+실무에서는 <button type ="submit">버튼</button>를 사용하기 : 형식 지정에서 제약을 받지 않는다.
+
+
+button과 input 태그의 예시
+<input type = "button" value="완료"/> 
+완료 버튼이 보여진다.
+
+<button type = "button"> 완료 </button>
+button의 type 값은 기본적으로 button이기에 type = "button" 생략 가능
+<input type = "button" value="완료"/> 와 같은 기능이다.
+
+<button> 완료 </button> 
+위의 버튼과 동일하며 실무에서는 button 태그로 버튼을 더 자주 생성한다.
+버튼을 누르면 페이지가 이동하지 않는다.
+주로 본인 인증, ID 검증 등에서 사용한다.
+
+<button type = "submit"> 제출 </button>
+버튼과 유사하지만 버튼은 페이지 이동을 하지 않고 submit은 데이터가 바로 서버로 전달되며 페이지가 이동한다.
+type = "submit" 은 제출 버튼이 된다.
+주로 회원가입, 로그인에서의 완료 등
+
+
+
+- checkbox 
+input type의 종류, 사용자가 하나만 선택 가능
+<input type = "checkbox", name ="number"/> one
+<input type = "checkbox", name ="number"/> two
+<input type = "checkbox", name ="number"/> three
+
+사각형 체크 버튼과 함께 *one *two *three 형태로 출력된다.
+input 태그는 홀태그로 사용한다.
+name이 같으면 같은 그룹이 된다.
+
+- radio 
+input type의 종류, 사용자가 복수 선택 가능
+<input type = "radio", name ="number"/> one
+<input type = "radio", name ="number"/> two
+<input type = "radio", name ="number"/> three
+
+둥근 체크 버튼과 함께 *one *two *three 형태로 출력된다.
+name이 같으면 같은 그룹이 된다.
+
+
+
+
+-	select
+<select> ... </select> : 정해진 선택지에서의 사용자 선택을 받는 태그
+drop down 선택 박스 생성, option 태그를 이용해 선택지 추가
+여러 선택지 중 선택을 하는 태그 (드롭다운 상자, 누르면 아래로 선택지가 펼쳐 나온다, 하나만 선택 가능)
+value는 서버에 전송되는 값이며, HTML 작성 시 값을 설정해두면 사용자에게 그 값이 보여진다. 
+select는 input과 다르게 사용자에게 입력받지 않고 미리 HTML 작성 시 값을 정해둔다, value 지정이 필수
+id = 식별자
+
+<select name=”age”>
+		<option value=”20”>20세</option>
+		<option value=”30”>30세</option>
+</select>
+
+<select name = "job" id="job">
+  <option value = "programming">프로그래밍</option>
+  <option value = "design">디자인</option>
+  <option value = "marketing">마케팅</option>
+</select>
+
+
+
+-	label
+입력 필드의 설명
+<div class =”form-group”>
+		<label for=”loginId”>사용할 ID></label>
+		<input type=”text” id = “loginId” name = “loginId”
+			Class=”form-control” placeholder=”사용할 id를 입력하세요”>
+</div>
+	<div class =”form-group”> : div 태그에 form-group 이라는 클래스 이름을 지정
+적용한 CSS 파일에 .form-group {…}이 있다면 해당 CSS가 적용된다.
+	<label for=”loginId”>사용할 ID></label> 사용자에게 ‘사용할 ID’가 보여진다.
+	input type=”text” 사용자에게 text를 입력받는다.
+	id = “loginId” name = “loginId” 입력 받은 변수를 loginId로 사용
+name = 서버에 전송할 변수, id = HTML 내에서 사용할 식별자(JS에서의 사용 등)
+	Class = “form-control” 입력 공간에만 특정 CSS가 적용된다.
+기본적으로 form-group CSS가 적용되고, 입력란에만 fom-control CSS가 적용된다.
+
+
+-	textarea
+<textarea name =”message” rows=”5” cols=”50” placeholder=”메시지를 입력하세요”></textarea>
+	여러 줄을 입력받을 수 있는 태그
+	name=”message”서버로 보낼 변수명, 세로 높이 5 가로 너비 30
+두 줄 이상의 긴 글을 입력받오록 한다. 
+사용자 입력이 들어올 수도 있고 미리 개발자가 지정할 수도 있다.(미리 써둔 값에 추가로 쓸 수 있다.)
+<br> 태그를 사용하지 않아도 줄이 자동으로 바뀐다.
+
+<textarea name="user_comment"></textarea>
+<textarea> hello,
+this is ...</textarea> 
+
+
+
+<label> ... </label> : 입력 상자에 제목을 붙이는 태그
+<label for="user_id">사용자 아이디:</label>
+<input type="text" id="user_id" name="user_id">
+
+<input type = "radio" name = "fruit" id = "fruit-banana"/>
+<label for = "fruit-banana"> 바나나 </label>
+<input type = "radio" name = "fruit" id = "fruit-apple"/>
+<label for = "fruit-apple"> 사과 </label>
+<input type = "radio" name = "fruit" id = "fruit-grapes"/>
+<label for = "fruit-grapes"> 포도 </label>
+
+
+
+- fieldset, legend 태그
+여러 입력 태그를 하나의 그룹으로 묶고, 원하는 제목을 지정할 수 있다.
+<fieldset>
+  <legend>가장 좋아하는 과일은?</legend>
+    <input type = "radio" name = "fruit" id = "fruit-banana"/>
+    <label for = "fruit-banana"> 바나나 </label>
+    <input type = "radio" name = "fruit" id = "fruit-apple"/>
+    <label for = "fruit-apple"> 사과 </label>
+    <input type = "radio" name = "fruit" id = "fruit-grapes"/>
+    <label for = "fruit-grapes"> 포도 </label>
+</fieldset>
+
+
+--------------------------------------------------------------------------------------------------------------
+
+<메타 태그>
+
+- meta 태그 : 웹 문서의 문자 인코딩을 알려주는 역할, <head> 태그 안에서 사용된다.
+문자 인코딩 : 웹 문서에 표시되는 문자열이 어떤 문자 코드를 기반으로 해석되고 표현할 지를 정한다. 
+근래의 웹에서는 유니코드 기반인 UTF-8을 사용한다.
+
+<meta charset="UTF-8"> : 문자 인코딩을 알려주는 역할
+
+<meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+viewport : 모바일 전용 태그, 웹 문서가 그려지는 영역을 조정
+모바일 장치에 웹 페이지를 최적화, 반응형 웹 디자인을 구현하는데 중요하게 사용된다.
+
+content 속성에 값을 정의한다.
+width=device-width // 너비는 기기를 따라 정해진다. 
+user-scalable=no
+initial-scale=1.0 // 초기 스케일 = 1.0 = 100%
+maximum-scale=1.0 // 최대 스케일 = 1.0 = 100%
+minimum-scale=1.0 // 최소 스케일 = 1.0 = 100%
+
+viewport를 선언하지 않는다면 기본값으로 모바일에서 device-width를 자동으로 설정한다.
+
+meta - author, description, keyword 속성 : 검색 엔진 최적화 SEO 전용 키워드
+- 사용자가 검색 엔진에서 검색 시 우선 순위를 높여준다. 과하게 사용할 경우 성능 저하 
+<meta name = "author" content = " ... ">
+<meta name = "description" content = " ... ">
+<meta name = "keywords" content = " ... ">
+
+meta - open graph og 속성
+<meta property = "og:title" content = " ... "/>
+<meta property = "og:type" content = " ... "/>
+<meta property = "og:url" content = " ... "/>
+<meta property = "og:image" content = " ... "/>
+
+
+--------------------------------------------------------------------------------------------------------------
+<iframe 태그>
+- 다른 웹 페이지를 표시할 수 있는 태그
+
+<iframe width ="500" height = "300" scr = https://www.inflearn.com frameborder="0"></iframe>
+
+iframe의 속성
+- src : iframe에 표시될 웹 문서의 주소
+- width, height : 화면의 비율, 높이, 너비 (px 기준, %도 허용), 해상도 기준으로 px이 결정된다. 
+- frameborder : 테두리 표시 여부(1, 0), 1은 표시, 0은 표시하지 않는다.
+- scrolling : 스크롤바 표시 여부 (yes, no, auto), auto는 해당 웹 페이지의 크기에 따라 결정된다.
+- name : a 태그에서 참조할 이름, <a href = "..." > 링크 </a> 에서 target 속성과 연결된다.
+--------------------------------------------------------------------------------------------------------------

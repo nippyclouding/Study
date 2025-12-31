@@ -1,0 +1,833 @@
+Validation : 검증
+
+<사전에 필요한 지식>
+@ModelAttribute : 웹 요청에서 받은 데이터들을 자동으로 자바 객체(VO, DTO, model 등)에 넣는 역할(바인딩)
+
+@PostMapping("/items/add")
+public String addItem (@ModelAttribute Item item){
+  itemRepository.save(item);
+  return "redirect:/items"
+}
+
+@ModelAttribute Item item : 웹 요청(클라이언트)에서 넘어온 name, price, quantity 등 값을 자동으로 item 객체 필드에 넣도록 한다.
+ 
+
+
+
+- 클라이언트 검증 : 사용자의 웹 브라우저(클라이언트)에서 데이터를 서버로 보내기 전에 수행하는 검증
+자바스크립트, HTML 5의 required, pattern, max, min .. 속성을 사용
+장점 : 빠른 UX(사용자 경험) - 서버까지 보낼 필요 없이 웹 브라우저에서 직접 검증하기에 빠르다, 서버 부담이 줄어든다. 
+단점 : 보안에 취약 - 사용자가 마음대로 조작, 건너뛸 수 있다. 클라이언트 검증만으로는 데이터의 정확성, 보안을 보장할 수 없다.
+
+- 서버 검증 : 사용자의 데이터를 서버에서 받아 서버에서 수행하는 검증
+자바 스프링, 파이썬 장고, 노드.js 등에서 코드로 직접 검증을 수행한다.
+장점 : 데이터 무결성, 보안에 강하다 - 서버 측 검증은 사용자가 조절할 수 없다, 여러 클라이언트 환경(모바일, 웹 등)에서 동작한다.
+단점 : 클라이언트 검증보다 느린 UX, 서버 부담이 증가한다.
+
+웹을 설계할 때는 클라이언트 검증과 서버 검증을 함께 사용해야 한다. 둘은 경쟁 관계가 아닌 보완 관계이다.
+
+
+
+서버 검증 : 사용자가 보낸 데이터가 유효한지 확인 (타입 유효성, NULL 또는 공백 판단, 범위 유효성.. )
+
+
+
+
+1. 서버 검증 - 직접 개발
+2. 서버 검증 - 스프링이 제공하는 BindingResult
+
+
+
+
+--------------------------------------------------------------------------------------------------------
+
+1. 서버 검증 - 직접 개발
+
+//V1
+@PostMapping("/add")
+public String addItem(@ModelAttribute Item item, RedirectAttributes redirectAttributes, Model model){
+
+  //오류 메시지를 담아두는 errors 해시맵
+  Map<String, String> errors = new HashMap<>();
+
+
+  //상품 이름 필드가 비어있다면 해시맵에 itemName 오류 put (단일 필드 - itemName)
+  item.getPrice() * item.getQuantity()StringUtils.hasText(item.getItemName())){
+    errors.put("itemName", "상품 이름은 필수입니다.");
+  }
+
+  //상품 가격 필드가 비어있다면 해시맵에 price 오류 put (단일 필드 - price)
+  if(item.getPrice()==null||item.getPrice()<1000||item.getPrice()>1000000)){
+    errors.put("price", "가격은 1,000 ~ 1,000,000까지 허용합니다.");
+  }
+
+  //상품 수량 필드가 비어있다면 해시맵에 quantity 오류 put (단일 필드 - quantity)
+  if(item.getQuantity()==null||item.getQuantity()>9999){
+    errors.put("quantity", "수량은 최대 9,999까지 허용합니다.");
+  }
+
+
+  //상품 가격 * 수량 합이 10,000 미만일 경우 globalError 오류 put (복합 필드 - price, quantity)
+  if(item.getPrice()!=null && item.getQuantity()!=null){
+    int resultPrice = item.getPrice() * item.getQuantity();
+    if(resultPrice < 10000){ 
+      errors.put("globalError", "가격 * 수량의 합은 10,000원 이상이 되어야 합니다. 현재 값 = " + resultPrice); 
+    }
+ 
+  }
+
+
+  //errors 맵이 비어있지 않다면 오류를 뷰로 전달
+  //model.addAttribute : 뷰로 errors 해시맵을 전달 (컨트롤러 to 뷰)
+  item.getPrice() * item.getQuantity()errors.isEmpty()){
+    model.addAttribute("errors", errors);
+    return "validation/v1/addForm";
+  }
+
+  //맵이 비어있다면(검증 성공 시) item을 리포지토리에 저장
+  //redirectAttributes.addAttribute(...) : 이전 요청에서 얻은 데이터를 새로운 요청으로 넘기는 역할
+  //상품 등록 폼의 데이터를 상품 상세 폼에서 사용하기 위해 사용
+
+  Item savedItem = itemRepository.save(item);
+  redirectAttributes.addAttribute("itemId", savedItem.getId());
+  redirectAttributes.addAttribute("status", true);
+  return "redirect:/validation/v1/items/{itemId}"; // 상품 상세 폼 뷰를 출력
+
+}
+
+
+
+addForm.html에서 사용자는 등록할 상품의 이름, 수량, 가격을 입력한다.
+사용자가 입력한 상품 이름, 수량, 가격에 대해 서버 측에서 검증을 수행한다.
+- 검증 실패 시 return "validation/v1/addForm" : 현재 페이지인 addForm.html을 사용자에게 보여준다. (다시 정상 값을 입력받기 위함)
+- 검증 성공 시 return "redirect:/validation/v1/items/{itemId}" : 상품을 저장 후 상품 상세 폼 item.{itemId).html을 보여준다.
+
+
+검증 실패 case - 타임리프
+- addForm.html의 css 처리 : 오류 메시지를 사용자에게 강조하기 위해 빨간색으로 처리
+<style>
+  container{max-width : 560px;}
+  .field-error{border-color: #dc3545;
+  color: #dc3545;
+  }
+</style>
+
+
+- addForm.html의 errors(컨트롤러 -> 뷰) 처리
+먼저 model.addAttribute("errors", errors);를 통해 컨트롤러에서 뷰로 errors 데이터를 받는다.
+
+1) 단일 필드 : itemName, price, quantity 오류 처리
+<div>
+  <label for="단일 필드" th:text="#{label.item.단일 필드}">단일 필드</label>
+    <input type="text" id="단일 필드" th:field="*{단일 필드}"
+          th:class="${errors?.containsKey('단일 필드')} ? 'form-control field-error' : 'form-control'" 
+          class="form-control" placeholder="단일 필드 을(를) 입력하세요">
+  <div class="field-error" th:if="${errors?.containsKey('itemName')}" th:text="${errors['단일 필드']}">
+          단일 필드명 오류
+  </div>
+</div>
+
+
+2) 복합 필드 : price * quantity = globalError 오류 처리
+<div th:if="${errors?.containsKey('globalError')}">
+    <p class="field-error" th:text="${errors['globalError']}">글로벌 오류 메시지</p>
+</div>
+
+
+* point : th:if 
+조건에 만족할 때만 해당 HTML 태그를 출력한다.
+errors가 null일 때 NullPointerException이 발생하는 대신 null을 반환한다.
+th:if에서 null은 실패로 처리되기에 오류 메시지가 출력되지 않는다. (SpringEL 문법)
+
+th:if="${errors?.containsKey('globalError')}" : 글로벌 오류 , if가 참일 경우 수행
+<p class="field-error" th:text="${errors['globalError']}">글로벌 오류 메시지</p>
+
+th:if="${errors?.containsKey('itemName')}" : 단일 필드 오류 , if가 참일 경우 수행
+th:text="${errors['단일 필드']} 단일 필드명 오류
+
+
+타입 유효성 : 상품 이름 - String으로 들어오는 것을 기대하지만 사용자의 입력이 int로 들어올 경우 등 타입 매칭에 대한 검증
+범위 유효성 : 상품 가격의 범위 - 1000 ~ 1000000 일 때 사용자의 입력이 범위에 합당한지에 대한 검증
+
+서버 검증 - 직접 개발의 한계
+- 뷰 템플릿의 중복이 많다.
+- 범위 유효성은 검증하지만 타입 유효성은 검증하지 못한다.
+- 범위 유효성 검증 실패 시 사용자의 뷰에 사용자가 입력한 데이터가 그대로 남아있지만 타입 유효성 검증 실패 시에는 그렇지 않다.
+
+--------------------------------------------------------------------------------------------------------
+
+
+2. 서버 검증 - 스프링이 제공하는 검증 : BindingResult
+
+//V2
+@PostMapping("/add")
+    public String addItemV1(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+
+        //item 객체의 itemName 값이 null이거나, 비어있거나, 공백 문자만으로 이루어져 있다면
+        item.getPrice() * item.getQuantity()StringUtils.hasText(item.getItemName())){
+            bindingResult.addError(new FieldError(bindingResult.getObjectName(), "itemName", "상품 이름은 필수입니다."));
+        }
+
+        //item 객체의 price 값이 null이거나, 1000보다 작거나 1000000 이상이라면
+        if(item.getPrice()==null||item.getPrice()<1000||item.getPrice()>1000000){
+            bindingResult.addError(new FieldError(bindingResult.getObjectName(), "price", "가격은 1,000~1,000,000까지 허용합니다."));
+        }
+
+        //item 객체의 수량이 null이거나, 10000보다 크다면
+        if(item.getQuantity()==null||item.getQuantity()>=10000){
+            bindingResult.addError(new FieldError(bindingResult.getObjectName(), "quantity", "수량은 최대 9,999까지 허용합니다."));
+        }
+
+        //item 객체의 가격과 수량이 null이 아닐 때 : 글로벌 오류
+        if(item.getPrice()!=null && item.getQuantity()!=null){
+            int resultPrice = item.getPrice() * item.getQuantity();
+            //총 가격이 10000보다 작다면
+            if(resultPrice<10000){
+                //bindingResult에 오류를 추가, ObjectError(필드 에러가 아니다.)
+                bindingResult.addError(new ObjectError(bindingResult.getObjectName(), "가격 * 수량의 합은 10,000원 이상이어야 합니다, 현재 값 =" + resultPrice));
+            }
+        }
+
+        //BindingResult가 오류를 가지고 있다면 == 검증 실패 시
+        if(bindingResult.hasErrors()){
+            log.info("errors={}", bindingResult);
+            return "validation/v2/addForm"; //현재 페이지를 다시 리턴
+        }//BindingResult를 사용하면 오류가 발생해도 컨트롤러가 호출된다, 400 오류가 발생 x
+
+        //아이템을 성공적으로 저장 시 == 검증 성공 시
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";//redirect -> 상품 상세
+    }
+
+
+<BindingResult>
+파라미터 - @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes
+=> BindingResult bindingResult는 반드시 @ModelAttribute의 객체 다음에 이어서 나와야 한다.
+
+@ModelAttribute를 이용해 클라이언트의 요청 데이터를 Item으로 넣는 바인딩 과정에서 오류가 발생하면 '해당 오류'들을 모두 모아 담아주는 역할을 수행한다.
+'해당 오류' : fieldError 단일 필드 오류, objectError 복합 필드 오류
+내부적으로 fieldErrorList, objectErrorList를 가지고 있다. 
+@ModelAttribute에 담는 객체 뒤에 BindingResult가 있다면 스프링은 클라이언트 요청 시 오류가 발생해도 400 오류창을 보여주지 않고 컨트롤러 로직을 계속 수행한다.
+직접 만든 검증의 Map<String, String> errors = 스프링이 제공하는 BindingResult bindingResult
+
+직접 만든 검증에서는 파라미터에서 컨트롤러 -> 뷰로 전달하기 위한 Model model 객체가 필요하지만
+BindingResult 객체를 사용하면 자동으로 Model 객체를 생성해서 컨트롤러 -> 뷰에 자동으로 전달해준다.
+
+BindingResult는 인터페이스이며 Errors 인터페이스를 상속한다.
+BindingResult를 사용 시 실제로 동작하는 구현체는 BeanPropertyBindingResult 클래스이다.
+Errors 인터페이스는 단순 오류 저장, 조회 기능을 제공하며 BindingResult 인터페이스는 Errors의 기능에 추가로 유틸리티성 기능을 제공한다.(addError() 등)
+
+BindingResult의 활용
+1:bindingResult.addError(...)
+2:bindingResult.rejectValue(...) 필드 오류 // .reject(...) 글로벌 오류
+=>1,2는 사용자가 직접 오류 코드를 설정하는 경우이며, 주로 범위 유효성 오류에 사용한다.
+3:bindingResult.hasErrors() : boolean으로 리턴
+=> 3은 스프링이 직접 오류에 추가하는 경우, 주로 타입 유효성 오류에 사용한다.
+
+
+BindingResult에 검증 오류를 적용하는 방법
+- 스프링이 직접 bindingResult에 오류를 넣어주는 방법 : 
+스프링이 제공하는 bindingResult를 사용할 경우 타입 유효성이 자동으로 검증된다, .hasErrors()
+- 개발자가 직접 bindingResult에 오류를 넣어주는 방법 : 
+개발자가 직접 if(price<1000) 같은 범위 유효성 등 비즈니스 로직을 설계한다, .rejectValue(..)(스프링이 자동으로 처리하지 못하는 복잡한 로직을 개발자가 직접 설계해준다.)
+- Validator 사용
+
+=> 직접 만든 검증 V1의 한계로 범위 유효성은 검증하지만 타입 유효성은 검증하지 못한다. 
+스프링이 제공하는 bindingResult의 타입 유효성 자동 검증과 V1에서 설계한 방식처럼 범위 유효성을 비즈니스 로직으로 검증하는 방법을 함께 사용하면
+타입 유효성, 범위 유효성에 대해 모두 검증할 수 있다.
+
+
+1) FieldError, ObjectError (단일 필드, 복합 필드 오류)
+단일 필드 오류 : itemName, price, quantity 오류
+오류가 있을 경우 bindingResult.addError(new FieldError( ... ) )로 오류를 담는다. 
+new FieldError가 단일 필드 오류를 의미한다.
+new FieldError을 생성하는 방법으로 파라미터를 전달하는 방식은 두 가지가 있다.
+- new FieldError (String objectName, String field, String defaultMessage) //상단 코드에서 사용한 방식
+- new FieldError (String objectName, String field, @Nullable Object rejectedValue, boolean bindingFailure, @Nullable String[] codes, @Nullable Object[] arguments, @Nullable String defaultMessage)
+
+item.getPrice() * item.getQuantity()StringUtils.hasText(item.getItemName())){
+    bindingResult.addError(new FieldError("item", "itemName", "상품 이름은 필수입니다."));
+}
+if(item.getPrice()==null||item.getPrice()<1000||item.getPrice()>1000000){
+    bindingResult.addError(new FieldError("item", "price", "가격은 1,000~1,000,000까지 허용합니다."));
+}
+if(item.getQuantity()==null||item.getQuantity()>=10000){
+    bindingResult.addError(new FieldError("item", "quantity", "수량은 최대 9,999까지 허용합니다."));
+}
+
+
+글로벌 오류(복합 필드 오류) 
+오류가 있을 경우 bindingResult.addError(new FieldError( ... ) )로 오류를 담는다. 
+new ObjectError가 복합 필드 오류를 의미한다.
+new ObjectError을 생성하는 방법으로 파라미터를 전달하는 방식은 두 가지가 있다.
+- new ObjectError (String objectName, String defaultMessage) //상단 코드에서 사용한 방식
+- new ObjectError (String objectName, @Nullable Object rejectedValue, @Nullable String[] codes, @Nullable Object[] arguments, @Nullable String defaultMessage)
+//FieldError와 다르게 field, bindingFailure 파라미터가 없다.
+
+if(item.getPrice()if(rejecString=null && item.getQuantity()if(rejectString=null){
+    int resultPrice = item.getPrice() * item.getQuantity();
+    if(resultPrice<10000){
+        bindingResult.addError(new ObjectError("item", "가격 * 수량의 합은 10,000원 이상이어야 합니다, 현재 값 =" + resultPrice));
+    }
+}
+
+String objectName 파라미터는 직접 "item"으로 넣어줄 수도 있지만 bindingResult.getObjectName()로 대체할 수도 있다.
+bindingResult는 @ModelAttribute의 객체 바로 다음에 붙기에 @ModelAttribute의 객체를 알 수 있기 때문이다.
+
+
+2) FieldError, ObjectError을 생성하는 방식
+- new FieldError (String objectName, String field, String defaultMessage) 
+- new ObjectError (String objectName, String defaultMessage)
+위 두 생성자를 활용하면 사용자가 입력한 데이터에 오류가 있을 경우 사용자 입력 데이터가 폼에서 모두 사라진다.
+
+아래 생성자를 활용하면 bindingResult를 사용하며 사용자가 입력한 데이터에 오류가 있을 경우 사용자 입력 데이터가 폼에서 계속 유지된다.
+ex) 가격 범위가 1000 이상이어야 할 때 사용자가 900을 입력했을 경우 오류 메시지를 전달하며 사용자가 입력한 900이 폼에 그대로 남아있어야 한다.
+- new FieldError (String objectName, String field, @Nullable Object rejectedValue, boolean bindingFailure, @Nullable String[] codes, @Nullable Object[] arguments, @Nullable String defaultMessage)
+- new ObjectError (String objectName, @Nullable Object rejectedValue, @Nullable String[] codes, @Nullable Object[] arguments, @Nullable String defaultMessage)
+
+
+해당 생성자를 적용한 개별 필드 예시 - 상품 이름이 공백이거나 null일 경우
+if(!StringUtils.hasText(item.getItemName())){
+  bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, null, null, "상품 이름은 필수입니다." ));
+}
+
+<파라미터 설명>
+String objectName : 오류가 발생한 객체 이름, @ModelAttribute로 넘어온 Item item
+String field : 오류가 발생한 필드, itemName
+Object Value : 사용자가 웹 브라우저에서 입력한 잘못된 값, item.getItemName()을 사용자의 폼에 다시 되돌려서 출력한다.
+boolean bindingFailure : 타입 유효성 오류인지를 판단(String -> int로 들어왔는지), 위 경우 false
+String[] codes : 메시지 코드 파라미터
+Object[] arguments : String[] codes에 사용될 파라미터
+String defaultMessage : 사용자에게 보여질 기본 오류 메시지
+
+개별 필드에 적용
+bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, null, null, "상품 이름은 필수입니다." ));
+bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, null, null, "가격은 1,000~1,000,000 까지 허용합니다." ));
+bindingResult.addError(new FieldError("item", "quantity", item.getQuantity(), false, null, null, "수량은 최대 9,999까지 허용합니다." ));
+
+복합 필드에 적용
+if(item.getPrice() * item.getQuantity() < 10000)
+  bindingResult.addError(new ObjectError("item", null, null, "가격*수량의 합은 10,000원 이상이어야 합니다. 현재 값 = " + item.getPrice() * item.getQuantity()));
+
+
+
+3) String[] codes, Object[] arguments 응용
+FieldError, ObjectError 생성자의 String[] codes, Object[] arguments를 사용하면 오류 메시지를 효율적으로 관리할 수 있다.
+
+application.properties에서는 messages.properties가 생략되어도 messages.properties를 기본 메시지로 인식한다.
+messages.properties에서 오류 메시지를 일반 메시지와 함께 관리해도 좋지만 구분을 위해 errors.properties를 따로 생성한다.
+=> application.properties에 spring.messages.basename = messages, errors를 입력해주면 기본값인 messages와 함께 errors.properties가 적용이 된다.
+//errors_en.properties 파일 생성 시 오류 메시지도 국제화 처리 가능
+
+errors.properties
+required.item.itemName=상품 이름은 필수입니다.
+range.item.price=가격은 {0} ~ {1} 까지 허용합니다.
+max.item.quantity=수량은 최대 {0} 까지 허용합니다.
+totalPriceMin=가격 * 수량의 합은 {0}원 이상이어야 합니다. 현재 값 = {1}
+
+컨트롤러 수정
+기존
+bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, null, null, "상품 이름은 필수입니다." ));
+수정
+bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, new String[]{"required.item.itemName"}, null, null));
+
+=> String[] codes 파라미터를 사용하여 defaultMessage 대신 전달할 수 있다.
+
+기존에는 defaultMessage로 "상품 이름은 필수입니다."를 출력했다면 
+수정 후에는 new String[]{"required.item.itemName"}를 통해 errors.properties의 required.item.itemName=상품 이름은 필수입니다.를 활용했다.
+
+
+String[] codes, Object[] arguments를 함께 이용한 경우
+기존
+bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, null, null, "가격은 1,000~1,000,000 까지 허용합니다." ));
+변경
+bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, new String[]{"range.item.price"}, new Object[]{1000, 1000000}, null));
+
+=> String[] codes, Object[] arguments 파라미터를 사용하여 defaultMessage 대신 전달할 수 있다.
+기존에는 defaultMessage로 "가격은 1,000~1,000,000 까지 허용합니다."를 출력했다면 
+수정 후에는 new String[]{"range.item.price"}, new Object[]{1000, 1000000}를 통해 
+errors.properties의 range.item.price=가격은 {0} ~ {1} 까지 허용합니다.를 활용했다.
+{0}와 {1}은 Object[] arguments 파라미터로 값을 전달한다.
+
+
+4) 간편하게 사용하는 방법 
+bindingResult.addError(new FieldError (String objectName, String field, @Nullable Object edValue, boolean bindingFailure, @Nullable String[] codes, @Nullable Object[] arguments, @Nullable String defaultMessage));
+처럼 사용한다면 파라미터가 많기에 불편한 점이 많다.
+.addError 대신 사용할 수 있는 간편한 방법으로 rejectValue(), reject()가 있다.
+
+파라미터 
+bindingResult.rejectValue(...) : 필드 오류
+1: bindingResult.rejectValue(field, errorCode)
+2: bindingResult.rejectValue(field, errorCode, defaultMessage)
+3: bindingResult.rejectValue(field, errorCode, arguments, defaultMessage)
+
+bindingResult.reject(...) : 글로벌 오류
+1: bindingResult.reject(errorCode)
+2: bindingResult.reject(errorCode, defaultMessage)
+3: bindingResult.reject(errorCode, arguments, defaultMessage)
+
+field : @Nullable String field 
+errorCode : String errorCode 
+arguments : @Nullable Object[] errorArgs
+defaultMessage : @Nullable String defaultMessage
+.addError에서 사용된 objectName 파라미터가 없다 => bindingResult는 @ModelAttribute의 객체를 알고 있기에 생략
+
+사용 예시 - 상품 이름이 공백이거나 null일 경우
+item.getPrice() * item.getQuantity()StringUtils.hasText(item.getItemName())){
+  bindingResult.rejectValue("itemName", "required");
+}
+
+bindingResult.rejectValue("itemName", "required");
+bindingResult.rejectValue("price", "range"m new Object[] {1000, 1000000}, null);
+
+
+
+5) rejectValue의 errorCode 파라미터
+bindingResult.rejectValue()와 reject()에는 String errorCode 파라미터가 있으며 내부적으로 MessageCodesResolver가 동작한다.
+
+오류 메시지 설계 방식
+오류 메시지 errors.property에서 오류 메시지를 관리할 수 있다.
+오류 메시지를 설계하는 방식으로는 
+required.item.itemName:상품 이름은 필수 입니다. 처럼 특정 상황에서만 사용되는 구체적 설계와
+required:필수 값입니다. 처럼 범용성으로 사용 가능한 간단한 설계가 있다.
+
+가장 좋은 방안은 범용성으로 사용하다 세밀한 부분이 필요할 경우 세밀한 내용이 적용되도록 메시지에 '단계' 를 두는 것이다.
+메시지에 '단계'를 둘 수 있도록 스프링은 MessageCodesResolver를 지원한다.
+
+
+public class MessageCodesResolverTest {
+    //MessageCodesResolver로 메시지 코드들을 생성
+    MessageCodesResolver codesResolver = new DefaultMessageCodesResolver();
+
+    @Test//FieldError 필드 에러 Resolver
+    void messageCodesResolverField(){
+        String[] messageCodes = codesResolver.resolveMessageCodes("required", "item", "itemName", String.class);
+        assertThat(messageCodes).containsExactly("required.item.itemName", "required.itemName", "required.java.lang.String", "required");
+    }
+    @Test//ObjectError 글로벌 에러 Resolver
+    void messageCodesResolverObject(){
+        String[] messageCodes = codesResolver.resolveMessageCodes("required", "item");
+        assertThat(messageCodes).containsExactly("required.item", "required");
+    }
+}
+
+
+1: 필드 에러
+String[] messageCodes = codesResolver.resolveMessageCodes("required", "item", "itemName", String.class);
+=> required, item, itemName, String.class를 파라미터로 넣을 경우 
+required.item.itemName
+required.itemName
+required.java.lang.String
+required
+메시지 코드 목록이 자동 생성되어 String[] 배열에 들어가게 된다.
+
+2: 글로벌 에러
+String[] messageCodes = codesResolver.resolveMessageCodes("required", "item");
+required.item
+required
+메시지 코드 목록이 자동 생성되어 String[] 배열에 들어가게 된다.
+
+* 오류 코드 : required.item.itemName
+* 오류 메시지 : 상품 이름은 필수입니다.
+
+- 필드 에러와 글로벌 에러의 경우에서 사용법이 동일하다 : String[] messageCodes = codesResolver.resolveMessageCodes( ... ) 
+- DefaultMessageCodesResolver()를 통해 메시지 코드 목록을 생성하고, errors.properties에 정의한 메시지를 스프링의 MessageSource가 찾아온다.
+- errors.properties에 required.item.itemName = ..., required.itemName = ..., required.java.lang.String = ..., required = ...처럼
+오류 메시지를 직접 매핑해야 생성된 오류 코드를 사용할 수 있다.
+
+MessageCodesResolver codesResolver = new DefaultMessageCodesResolver();
+codesResolver.resolveMessageCodes( ... )
+codesResolver.resolveMessageCodes의 파라미터
+- code
+- objectname
+- field // 단일 필드에서만 사용
+- field type // 단일 필드에서만 사용
+
+DefaultMessageCodesResolver()의 기본 메시지 생성 규칙
+필드 오류(단일 오류)
+1: code + . + objectname + . + field
+2: code + . + field
+3: code + . + field type
+4: code
+글로벌 오류(복합 오류)
+1: code + . + objectname
+2: code
+
+DefaultMessageCodesResolver(또는 MessageCodesResolver) 위의 방식처럼 구체적 설계를 먼저 한 뒤 간단한 설계를 한다. (오류 코드에 '단계'를 가진다.)
+
+* errors.properties에 required.item.itemName = ..., required.itemName = ..., required.java.lang.String = ..., required = ...처럼
+오류 메시지를 직접 매핑해야 생성된 오류 코드를 사용할 수 있다.
+
+<errors.properties에 오류코드 = 오류 메시지를 매핑>
+#==ObjectError==
+#Level1
+totalPriceMin.item=상품의 가격 * 수량의 합은 {0}원 이상이어야 합니다. 현재 값 = {1}
+
+#Level2 - 생략
+totalPriceMin=전체 가격은 {0}원 이상이어야 합니다. 현재 값 = {1}
+
+#==FieldError==
+#Level1
+required.item.itemName=상품 이름은 필수입니다. 
+range.item.price=가격은 {0} ~ {1} 까지 허용합니다. 
+max.item.quantity=수량은 최대 {0} 까지 허용합니다.
+
+#Level2 - 생략
+
+#Level3
+required.java.lang.String = 필수 문자입니다. 
+required.java.lang.Integer = 필수 숫자입니다. 
+min.java.lang.String = {0} 이상의 문자를 입력해주세요. 
+min.java.lang.Integer = {0} 이상의 숫자를 입력해주세요. 
+range.java.lang.String = {0} ~ {1} 까지의 문자를 입력해주세요. 
+range.java.lang.Integer = {0} ~ {1} 까지의 숫자를 입력해주세요. 
+max.java.lang.String = {0} 까지의 문자를 허용합니다.
+
+#Level4
+required = 필수 값 입니다.
+min= {0} 이상이어야 합니다.
+range= {0} ~ {1} 범위를 허용합니다.
+max= {0} 까지 허용합니다.
+
+=>MessageSource는 errors.property에서 오류 코드에 매핑된 오류 메시지를 찾아 사용한다.
+
+
+<BindingResult에 검증 오류를 적용하는 방법>
+
+- 개발자가 직접 bindingResult에 오류를 넣어주는 방법 : 
+개발자가 직접 if(price<1000) 같은 범위 유효성 등 비즈니스 로직을 설계한다. (스프링이 자동으로 처리하지 못하는 복잡한 로직을 개발자가 직접 설계해준다.)
+=> rejectValue(), reject()를 직접 호출할 수 있다. (.addError(..) 대신 사용)
+
+<로직 동작 순서>
+1:범위 유효성 검사가 실패한 경우 rejectValue(), reject()를 호출 
+2:MessageCodesResolver를 사용하여 범위 오류 메시지 코드를 생성
+3:rejectValue(), reject()가 내부적으로 new FieldError, new ObjectError를 생성하며 오류 코드를 보관한다.
+4:타임리프의 th:errors에서 오류 코드들을 순서대로 찾아 매핑되는 오류 메시지를 사용자의 뷰에 출력시킨다.
+
+- 스프링이 직접 bindingResult에 오류를 넣어주는 방법 : 
+스프링이 제공하는 bindingResult를 사용할 경우 타입 유효성이 자동으로 검증된다, bindingResult.hasErrors()
+뷰에서 타입을 맞지 않게 입력했을 때(price 공간에 String 문자열 등) typeMismatch.item.price, typeMismatch.price, typeMismatch.java.lang.Integer, typeMismatch 처럼 오류 메시지가 출력된다.
+스프링은 타입 유효성 검증이 실패했을 경우 typeMismatch 오류 코드를 사용하며 MessageCodesResolver를 통해 4가지 오류 코드가 생성된다.
+
+errors.properties에 추가
+typeMismatch.java.lang.Integer=숫자를 입력해주세요.
+typeMismatch=타입 오류입니다.
+=> 타입 유효성 검증이 실패할 경우 적절한 오류 메시지가 출력된다.
+
+- Validator 사용
+
+
+6) Validator 사용
+스프링은 검증을 체계적으로 수행하기 위해 Validator 인터페이스를 제공한다.
+검증 로직을 별도의 클래스로 분리가 가능하다.
+
+import hello.itemservice.domain.item.Item;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+@Component//스프링 빈으로 등록
+public class ItemValidator implements Validator {
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return Item.class.isAssignableFrom(clazz);
+    }
+    @Override
+    public void validate(Object target, Errors errors) {
+        Item item = (Item) target;
+
+        //오류 메시지 생성
+        if(!StringUtils.hasText(item.getItemName())){
+            errors.rejectValue("itemName", "required");
+        }
+
+        if(item.getPrice()==null||item.getPrice()<1000||item.getPrice()>1000000){
+            errors.rejectValue("price", "range", new Object[]{1000, 1000000}, null);
+        }
+
+        if(item.getQuantity()==null || item.getQuantity()>10000){
+            errors.rejectValue("quantity", "max", new Object[]{9999}, null);
+        }
+
+        if(!String=null && item.getQuantity()if(!String=null){
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if(resultPrice<10000){
+                errors.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
+            }
+        }
+
+    }
+}
+
+1: boolean supports(Class<?> clazz) : 타입 유효성을 검증한다.
+return Item.class.isAssignableFrom(clazz) : 파라미터로 넘어오는 clazz가 타입이 유효한지 확인한다. 참일 경우 true, 거짓일 경우 false
+2: void validate(Object target, Errors errors) : 범위 유효성을 검증한다.
+파라미터 Errors errors 속에 하위 타입인 bindingResult가 들어온다.
+
+<Validator을 구현하는 ItemValidator 검증기 사용 1>
+
+private final ItemValidator itemValidator;
+@PostMapping("/add")
+public String addItemV5(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+
+    itemValidator.validate(item, bindingResult);//검증 로직이 분리되면서 코드가 간단해졌다.
+
+    //검증 실패 시 기존 페이지로 다시 돌아간다.
+     if(bindingResult.hasErrors()){
+        log.info("errors={}", bindingResult);
+        return "validation/v2/addForm";
+    }
+     //검증 성공 시 리포지토리에 저장
+    Item savedItem = itemRepository.save(item);
+    redirectAttributes.addAttribute("itemId", savedItem.getId());
+    redirectAttributes.addAttribute("status", true);
+    return "redirect:/validation/v2/items/{itemId}";//redirect -> 상품 상세
+}
+
+<Validator을 구현하는 ItemValidator 검증기 사용 2>
+
+private final ItemValidator itemValidator;
+
+@InitBinder//현재 동작되는 컨트롤러에만 영향을 주는 애노테이션
+public void init(WebDataBinder dataBinder){
+  dataBinder.addValidators(itemValidator);   //WebDataBinder은 스프링의 파라미터 바인딩 역할을 하며 검증기를 내부에 담을 수 있다.
+}
+
+@PostMapping("/add")
+public String addItemV6(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+
+    //검증기 코드가 삭제되고 파라미터에 @Validated 추가
+
+    //검증 실패 시 기존 페이지로 다시 돌아간다.
+     if(bindingResult.hasErrors()){
+        log.info("errors={}", bindingResult);
+        return "validation/v2/addForm";
+    }
+     //검증 성공 시 리포지토리에 저장
+    Item savedItem = itemRepository.save(item);
+    redirectAttributes.addAttribute("itemId", savedItem.getId());
+    redirectAttributes.addAttribute("status", true);
+    return "redirect:/validation/v2/items/{itemId}";//redirect -> 상품 상세
+}
+
+파라미터 @Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes
+=> @Validated는 스프링이 지원하는 검증 애노테이션이며, 자바 표준 검증 애노테이션 @Valid를 사용할 수도 있다.
+public String addItemV6(@Valid @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+
+--------------------------------------------------------------------------------------------------------
+
+<최종 코드>
+ValidationControllerV2
+
+import hello.itemservice.domain.item.Item;
+import hello.itemservice.domain.item.ItemRepository;
+import hello.itemservice.web.validation.form.ItemValidator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Slf4j
+@Controller
+@RequestMapping("/validation/v2/items")
+@RequiredArgsConstructor
+public class ValidationItemControllerV2 {
+
+    private final ItemRepository itemRepository;
+
+    @GetMapping
+    public String items(Model model) {
+        List<Item> items = itemRepository.findAll();
+        model.addAttribute("items", items);
+        return "validation/v2/items";
+    }
+    @GetMapping("/{itemId}")
+    public String item(@PathVariable long itemId, Model model) {
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "validation/v2/item";
+    }
+
+    @GetMapping("/add")
+    public String addForm(Model model) {
+        model.addAttribute("item", new Item());
+        return "validation/v2/addForm";
+    }
+
+    private final ItemValidator itemValidator;
+
+    //@PostMapping("/add")
+    public String addItemV5(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+
+        itemValidator.validate(item, bindingResult);
+
+        if(bindingResult.hasErrors()){
+            log.info("errors={}", bindingResult);
+            return "validation/v2/addForm";
+        }
+
+        //아이템을 성공적으로 저장 시 == 검증 성공 시
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";//redirect -> 상품 상세
+    }
+
+
+    @InitBinder
+    public void init(WebDataBinder dataBinder) {
+        log.info("init binder {}", dataBinder);
+        dataBinder.addValidators(itemValidator);
+    }
+
+    @PostMapping("/add")
+    public String addItemV6(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+
+        if(bindingResult.hasErrors()){
+            log.info("errors={}", bindingResult);
+            return "validation/v2/addForm";
+        }
+
+        //아이템을 성공적으로 저장 시 == 검증 성공 시
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";//redirect -> 상품 상세
+    }
+
+}
+
+
+errors.property
+
+#범위 유효성
+#==ObjectError==
+#Level1
+totalPriceMin.item=상품의 가격 * 수량의 합은 {0}원 이상이어야 합니다. 현재 값 = {1}
+#Level2 - 생략
+totalPriceMin=전체 가격은 {0}원 이상이어야 합니다. 현재 값 = {1}
+#==FieldError==
+#Level1
+required.item.itemName=상품 이름은 필수입니다. 
+range.item.price=가격은 {0} ~ {1} 까지 허용합니다. 
+max.item.quantity=수량은 최대 {0} 까지 허용합니다.
+
+#Level2 - 생략
+#Level3
+required.java.lang.String = 필수 문자입니다. 
+required.java.lang.Integer = 필수 숫자입니다. 
+min.java.lang.String = {0} 이상의 문자를 입력해주세요. 
+min.java.lang.Integer = {0} 이상의 숫자를 입력해주세요. 
+range.java.lang.String = {0} ~ {1} 까지의 문자를 입력해주세요. 
+range.java.lang.Integer = {0} ~ {1} 까지의 숫자를 입력해주세요. 
+max.java.lang.String = {0} 까지의 문자를 허용합니다.
+max.java.lang.Integer = {0} 까지의 숫자를 허용합니다.
+
+#Level4
+required = 필수 값 입니다.
+min= {0} 이상이어야 합니다.
+range= {0} ~ {1} 범위를 허용합니다.
+max= {0} 까지 허용합니다.
+
+#타입 유효성
+typeMismatch.java.lang.Integer=숫자를 입력해주세요.
+typeMismatch=타입 오류입니다.
+
+
+add.html
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link th:href="@{/css/bootstrap.min.css}"
+          href="../css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 560px;
+        }
+        .field-error {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="py-5 text-center">
+        <h2 th:text="#{page.addItem}">상품 등록</h2>
+    </div>
+
+    <form action="item.html" th:action th:object="${item}" method="post">
+
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+        </div>
+
+        <div>
+            <label for="itemName" th:text="#{label.item.itemName}">상품명</label>
+            <input type="text" id="itemName" th:field="*{itemName}"
+                   th:errorclass="field-error" class="form-control" placeholder="이름을 입력하세요">
+            <div class="field-error" th:errors="*{itemName}">
+                상품명 오류
+            </div>
+        </div>
+        <div>
+            <label for="price" th:text="#{label.item.price}">가격</label>
+            <input type="text" id="price" th:field="*{price}"
+                   th:errorclass="field-error" class="form-control" placeholder="가격을 입력하세요">
+            <div class="field-error" th:errors="*{price}">
+                가격 오류
+            </div>
+        </div>
+
+        <div>
+            <label for="quantity" th:text="#{label.item.quantity}">수량</label>
+            <input type="text" id="quantity" th:field="*{quantity}"
+                   th:errorclass="field-error" class="form-control" placeholder="수량을 입력하세요">
+            <div class="field-error" th:errors="*{quantity}">
+                수량 오류
+            </div>
+
+        </div>
+
+        <hr class="my-4">
+
+        <div class="row">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.save}">상품 등록</button>
+            </div>
+            <div class="col">
+                <button class="w-100 btn btn-secondary btn-lg"
+                        onclick="location.href='items.html'"
+                        th:onclick="|location.href='@{/validation/v2/items}'|"
+                        type="button" th:text="#{button.cancel}">취소</button>
+            </div>
+        </div>
+
+    </form>
+
+</div> <!-- /container -->
+</body>
+</html>
+
+
+
+
+
+
+

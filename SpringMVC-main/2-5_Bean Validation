@@ -1,0 +1,165 @@
+Bean Validation
+
+Validation과 같이 검증 로직을 매번 코드로 작성하는 것은 번거롭다.
+Bean Validation : 일반적인 검증 로직을 표준화, 공통화 // Bean Validation은 검증 애노테이션과 여러 인터페이스들의 모음
+Bean Validation은 표준 기술, 구현체로 Hibernate Validator가 있다. (이 Hibernate는 ORM과는 연관이 없다.)
+
+Bean Validation 라이브러리 사용법 : Build.gradle에 의존 관계 추가 
+implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+Bean Validation은 검증 애노테이션을 제공하여 검증 로직을 표준화한다, 간단한 검증 로직
+- @NotBlank : 비어있는 값 null, 공백""만 있는 경우를 허용하지 않는다. @NotBlank(message = "공백은 허용되지 않습니다.") 와 같이 기본 메시지 설정 가능
+- @NotNull : null을 허용하지 않는다.
+- @Range(min = 1000, max = 1000000) : 범위 안의 값이어야 한다.
+- Max(9999) : 최대 9999까지만 허용한다.
+
+import lombok.Data;
+import org.hibernate.validator.constraints.Range;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+@Data
+public class Item {
+
+    @NotBlank
+    private String itemName;
+
+    @NotNull
+    @Range(min = 1000, max = 1000000)
+    private Integer price;
+
+    @NotNull
+    @Max(value = 9999)
+    private Integer quantity;
+}
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+<스프링에 Bean Validation 적용>
+스프링은 개발자를 위해 Bean Validation(빈 검증기)를 스프링에 완전히 통합해두었다.직접 Bean Validation을 사용하지 않아도 된다.
+스프링 부트에 spring-boot-starter-validation 라이브러리를 넣으면 스프링 부트는 자동으로 Bean Validator를 인지하고 스프링에 통합한다.
+스프링은 Validator(검증기)을 자동으로 global로 등록한다. 해당 검증기는 @NotNull 같은 애노테이션을 보고 검증을 수행한다.
+검증 오류가 발생 시 FieldError, ObjectError를 생성하여 BindingResult에 담아준다.
+
+global Validator를 직접 등록 시 Baan Validator를 global Validator로 등록하지 않는다.
+=> 애노테이션 기반 검증기가 동작하지 않는다.
+@SpringBootApplication 클래스 부분에 implements WebMvcConfigurer가 없어야 한다.
+
+
+import hello.itemservice.domain.item.Item;
+import hello.itemservice.domain.item.ItemRepository;
+import hello.itemservice.domain.item.SaveCheck;
+import hello.itemservice.domain.item.UpdateCheck;
+import hello.itemservice.web.validation.form.ItemValidator;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import javax.validation.Valid;
+import java.util.List;
+@Slf4j
+@Controller
+@RequestMapping("/validation/v3/items")
+@RequiredArgsConstructor
+public class ValidationItemControllerV3 {
+    private final ItemRepository itemRepository;
+
+    @GetMapping
+    public String items(Model model) {
+        List<Item> items = itemRepository.findAll();
+        model.addAttribute("items", items);
+        return "validation/v3/items";
+    }
+
+    @GetMapping("/{itemId}")
+    public String item(@PathVariable long itemId, Model model) {
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "validation/v3/item";
+    }
+
+    @GetMapping("/add")
+    public String addForm(Model model) {
+        model.addAttribute("item", new Item());
+        return "validation/v3/addForm";
+    }
+
+    @PostMapping("/add")
+    public String addItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+
+        //글로벌(복합 필드) 오류만 직접 설정하기, 단일 필드는 검증기가 검증 수행
+        if(item.getPrice() !=null &&  item.getQuantity() !=null){
+            int result = item.getPrice()*item.getQuantity();
+            if(result<10000){
+                bindingResult.reject("totalPriceMin", new Object[]{10000, result}, null);
+            }
+        }
+
+        if(bindingResult.hasErrors()){
+            log.info("errors={}", bindingResult);
+            return "validation/v3/addForm";
+        }
+
+        //아이템을 성공적으로 저장 시 == 검증 성공 시
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v3/items/{itemId}";//redirect -> 상품 상세
+    }
+
+    @GetMapping("/{itemId}/edit")
+    public String editForm(@PathVariable Long itemId, Model model){
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "validation/v3/editForm";
+    }
+
+    //상품 수정 폼
+    @PostMapping("/{itemId}/edit")
+    public String edit(@PathVariable Long itemId, @Validated @ModelAttribute Item item, BindingResult bindingResult){
+
+        //글로벌(복합 필드) 오류만 직접 설정하기, 단일 필드는 검증기가 검증 수행
+        if(item.getPrice() !=null &&  item.getQuantity() !=null){
+            int result = item.getPrice()*item.getQuantity();
+            if(result<10000){
+                bindingResult.reject("totalPriceMin", new Object[]{10000, result}, null);
+            }
+        }
+        if(bindingResult.hasErrors()){
+            log.info("errors={}", bindingResult);
+            return "validation/v3/editForm";
+        }
+        itemRepository.update(itemId, item);
+        return "redirect:/validation/v3/items/{itemId}";
+    }
+}
+
+
+
+위 코드에서 @PostMapping("/add")로 들어오면 @Validated 애노테이션이 Item에 붙은 Bean Validation 애노테이션을 확인하고 검증을 정상 수행한다.
+@Valid는 자바 표준 제공, @Validated는 스프링이 제공하는 것이며 @Validated는 내부에 groups라는 기능을 포함하고 있다. (groups 예시는 따로 쓰지 않을 것이다.)
+
+@PostMapping("/add") 검증 순서 : 
+1) @ModelAttribute로 사용자가 입력한 데이터를 각각의 Item 필드에 타입 변환을 시도한다.
+- 타입 변환 성공 시 다음으로
+- 타입 변환 실패 시 typeMismatch : FieldError를 추가한다.
+
+2) 바인딩에 성공한 필드에만 Validator 검증기 적용
+바인딩에 실패한(타입 미스매치) 경우 Bean Validation 적용 x(타입이 다르게 들어왔기에 범위 확인이 불가)
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,126 @@
+백준 10828 스택
+
+1. 직접 리스트로 구현한 스택
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        List<Integer> output = new ArrayList<>();
+
+        Stack stack = new Stack();
+
+        int N = Integer.parseInt(br.readLine());
+        for(int i=0; i<N; i++){
+            String[] s = br.readLine().split(" ");
+            if(s[0].equals("push")){
+                int num = Integer.parseInt(s[1]);
+                stack.push(num);
+            }
+            else if(s[0].equals("pop")){
+                int result = stack.pop();
+                output.add(result);
+            }
+            else if(s[0].equals("size")){
+                output.add(stack.size());
+            }
+            else if(s[0].equals("empty")){
+                int result = stack.empty() ? 1 : 0;
+                output.add(result);
+            }
+            else if(s[0].equals("top")){
+                int top = stack.top();
+                output.add(top);
+            }
+        }
+
+        for(int i: output){
+            bw.write(i + "\n");
+        }
+        bw.flush();
+        bw.close();
+    }
+
+    static class Stack{
+        List<Integer> list = new ArrayList<>();
+
+        void push(int x){
+            list.add(x);
+        }
+
+        int pop(){
+            if(!list.isEmpty())
+                return list.remove(list.size()-1);
+            else return -1;
+        }
+
+        int size(){
+            return list.size();
+        }
+
+        boolean empty(){
+            if(!list.isEmpty()) return false;
+            else return true;
+        }
+
+        int top(){
+            if(!list.isEmpty()) return list.get(list.size()-1);
+            else return -1;
+        }
+    }
+}
+
+
+2. 자바의 Deque 자료구조를 이용한 스택
+실무에서는 Deque를 사용하기
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        List<Integer> output = new ArrayList<>();
+        Deque<Integer> deque = new ArrayDeque<>();
+
+        int N = Integer.parseInt(br.readLine());
+
+        for(int i=0; i<N; i++){
+            String[] s = br.readLine().split(" ");
+            if(s[0].equals("push")){
+                int num = Integer.parseInt(s[1]);
+                deque.addFirst(num);
+            }
+            else if(s[0].equals("pop")){
+                if(!deque.isEmpty()) output.add(deque.removeFirst());
+                else output.add(-1);
+            }
+            else if(s[0].equals("size")){
+                output.add(deque.size());
+            }
+            else if(s[0].equals("empty")){
+                int result = deque.isEmpty() ? 1 : 0;
+                output.add(result);
+            }
+            else if(s[0].equals("top")){
+                if(!deque.isEmpty()) output.add(deque.getFirst());
+                else output.add(-1);
+            }
+        }
+        for(int i: output){
+            bw.write(i + "\n");
+        }
+        bw.flush();
+        bw.close();
+    }
+
+
+}
+

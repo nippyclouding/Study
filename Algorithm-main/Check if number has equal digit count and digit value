@@ -1,0 +1,63 @@
+https://leetcode.com/problems/check-if-number-has-equal-digit-count-and-digit-value/description/
+
+
+package algorithm.bacjun;
+
+import java.io.*;
+import java.util.*;
+public class Solution {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String num = br.readLine();
+        char[] numChar = num.toCharArray();
+
+        boolean output = true;
+
+        int[] count = new int[numChar.length];
+        for(int i=0; i<count.length; i++){
+            int temp = Integer.parseInt(String.valueOf(numChar[i]));
+            if(temp < count.length) {
+                count[temp]++;
+            }
+            else {
+                output = false;
+                break;
+            }
+        }
+
+        if(output) {
+            for (int i = 0; i < count.length; i++) {
+                int temp = Integer.parseInt(String.valueOf(numChar[i]));
+                if (count[i] != temp) {
+                    output = false;
+                    break;
+                }
+            }
+        }
+        System.out.println(output);
+
+    }
+}
+
+
+
+public class Solution {
+    public boolean digitCount(String num) {
+        int[] count = new int[10];
+
+        for (char c : num.toCharArray()) {
+            int digit = c - '0';
+            count[digit]++;
+        }
+
+        for (int i = 0; i < num.length(); i++) {
+            int expectedCount = num.charAt(i) - '0';
+            if (count[i] != expectedCount) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}

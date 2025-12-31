@@ -1,0 +1,62 @@
+https://www.acmicpc.net/problem/10845
+백준 10845 큐
+
+Deque로 구현한 큐
+간만에 큐를 구현하다 보니 앞이 어디고 뒤가 어디인지 헷갈렸다.
+
+데이터를 넣는 부분이 앞, 출력하는 부분을 뒤로 헷갈렸는데, 
+데이터를 넣는 부분이 뒤, 출력하는 부분이 앞이었다.
+
+queue의 push가 데이터를 뒤에 넣고, deque의 addLast와 동일하다.
+queue의 pop이 자료구조의 가장 앞부분을 빼내고, deque의 removeFirst와 동일하다.
+
+문제에서 push 메서드는 결과창에 출력하라는 것이 없었는데, 그것이 오류의 원인이었다.
+계속 output에 push 데이터까지 넣어서 출력했었다.
+그것만 수정해서 제출하니 성공했다. 
+
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+
+        Deque<Integer> queue = new ArrayDeque<>();
+        List<Integer> output = new ArrayList<>();
+
+        for(int i=0;i <N; i++){
+            String[] s = br.readLine().split(" ");
+            if(s[0].equals("push")){
+                queue.addLast(Integer.parseInt(s[1]));
+            } else if (s[0].equals("pop")) {
+                if(queue.isEmpty()) output.add(-1);
+                else output.add(queue.removeFirst());
+            } else if (s[0].equals("size")) {
+                output.add(queue.size());
+            } else if(s[0].equals("empty")){
+                if(queue.isEmpty()) output.add(1);
+                else output.add(0);
+            } else if(s[0].equals("front")){
+                if(queue.isEmpty()) output.add(-1);
+                else output.add(queue.getFirst());
+            } else if(s[0].equals("back")){
+                if(queue.isEmpty()) output.add(-1);
+                else output.add(queue.getLast());
+            }
+        }
+
+        if(N<1000){
+            for (int i : output)
+                System.out.println(i);
+        }
+        else {
+            for (int i : output){
+                bw.write(i + "\n");
+            }
+            bw.flush();
+            bw.close();
+        }
+    }
+}

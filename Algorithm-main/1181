@@ -1,0 +1,109 @@
+백준 1181 단어정렬
+https://www.acmicpc.net/problem/1181
+
+내가 설계한 코드
+
+import java.io.*;
+import java.util.*;
+
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        int N = Integer.parseInt(br.readLine());
+
+        //중복 : set으로 제거
+        Set<String> set = new HashSet<>();
+        for(int i=0; i<N; i++){
+            String input = br.readLine();
+            set.add(input);
+        }
+        List<String> list = new ArrayList<>(set);
+
+        //글자 순서대로 정렬
+        List<List<String>> bucket = new ArrayList<>();
+
+        for(int i=0; i<=20000; i++) {
+            bucket.add(null);
+        }
+
+
+        for(int i=0; i<list.size(); i++){
+            String temp = list.get(i);
+            int idx = temp.length();
+
+            if(bucket.get(idx)==null){
+                List<String> component = new ArrayList<>();
+                component.add(temp);
+                bucket.set(idx, component);
+            }
+            else {
+                bucket.get(idx).add(temp);
+
+            }
+        }
+
+
+        for(int i=0; i<bucket.size(); i++){
+            if(bucket.get(i)!=null) {
+                List<String> temp = bucket.get(i);
+                temp.sort(Comparator.naturalOrder());
+                for (String s : temp)
+                    bw.write(s+ "\n");
+            }
+        }
+        bw.flush();
+        bw.close();
+
+    }
+}
+
+스스로의 피드백
+부족한 점
+- 시간 복잡도는 나쁘지 않은데 공간 복잡도가 문제이다.
+
+내가 생각했던 건 리스트를 두 개 사용하는 것이었다. (리스트 안의 리스트 List<List<String>> list)
+입력값의 길이가 k일때 k번째 인덱스에 String 리스트를 생성하고 그 String 리스트 안에 값을 설게
+
+이렇게 되면 공간 복잡도에서 굉장히 문제가 있다. 
+일단 입력값의 최대 길이에 모두 null을 넣고 시작한다.
+for(int i=0; i<=20000; i++) {
+  bucket.add(null);
+}
+
+
+잘한 점
+- BufferReader, Writer에 익숙해지려고 노력한 점
+- 셋으로 중복 제거
+- temp.sort(Comparator.naturalOrder()) : 마지막에 한 번에 정렬을 했다.
+이전엔 else {
+          bucket.get(idx).add(temp);
+          bucket.get(idx).sort(Comparator.naturalOrder());}
+          이렇게 입력값을 넣은 뒤의 시점에 바로 정렬을 했었다. 
+          마지막에 한 번만 정렬을 하니 실행 시간이 엄청 많이 줄어들었다.1488ms -> 344ms
+
+
+시니어님의 코드
+Set<String> set = new LinkedHashSet<>();
+        //입력
+        for (int i = 0; i < n; i++) {
+            set.add(br.readLine());
+        }
+
+        //set -> list로 전환
+        List<String> words = new ArrayList<>(set);
+
+        //리스트 정렬, 먼저 길이로 비교, 길이가 같으면 사전 순으로 정렬
+        Collections.sort(words, (a, b) -> {
+            if (a.length() != b.length()) {
+                return a.length() - b.length();
+            }
+            return a.compareTo(b);
+        });
+
+        //리스트 출력
+        for (String word : words) {
+            System.out.println(word);
+        }
+

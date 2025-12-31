@@ -1,0 +1,95 @@
+V1의 문제점 : 뷰를 렌더링하는 코드의 중복
+
+String viewPath = "/WEB-INF/views/~.jsp";
+RequestDispatcher dispatcher =request.getRequestDispatcher(viewPath);
+dispatcher.forward(request, response);
+
+해결 : view를 처리하는 객체를 생성하여 중복 제거
+
+1. view를 처리하는 클래스 생성
+public class MyView {
+    private String viewPath;
+
+    //뷰 객체를 생성할 때 경로를 함께 받는다.
+    public MyView(String viewPath) {
+        this.viewPath = viewPath;
+    }
+
+    //myview.render을 통해 view를 요청 객체에 전달하여 응답을 생성
+    public void render(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        RequestDispatcher dispatcher = request.getRequestDispatcher(viewPath);
+        dispatcher.forward(request, response);
+    }
+}
+
+2. 컨트롤러 인터페이스 - process 메서드를 거치면 리턴 타입으로 myview 객체가 생성된다.
+public interface ControllerV2 {
+    MyView process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+}
+
+//요청을 통해 MyView 객체를 반환 
+public class MemberFormControllerV2 implements ControllerV2{
+    @Override
+    public MyView process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        return new MyView("/WEB-INF/views/new-form.jsp");
+    }
+}
+//요청을 통해 MyView 객체를 반환 
+public class MemberSaveControllerV2 implements ControllerV2{
+    @Override
+    public MyView process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        //요청 객체에서 username, age를 조회하여 Member 객체 생성, DB에 저장
+        String username = request.getParameter("username");
+        int age = Integer.parseInt(request.getParameter("age"));
+
+        Member member = new Member(username, age);
+        memberRepository.save(member);
+
+        //요청 객체에 새로 생성한 Member 객체를 넣는다.
+        request.setAttribute("member", member);
+
+        return new MyView("/WEB-INF/views/save-result.jsp");
+    }
+}
+//요청을 통해 MyView 객체를 반환 
+public class MemberListControllerV2 implements ControllerV2{
+    @Override
+    public MyView process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        //DB에서 전체 회원 조회
+        List<Member> members = memberRepository.findAll();
+        //요청 객체에 전체 회원을 넣는다.
+        request.setAttribute("members", members);
+
+        return new MyView("/WEB-INF/views/members.jsp");
+    }
+}
+
+3. 프론트 컨트롤러 - v1에서 검증 통과 이후 마지막 부분에서 뷰 렌더링
+public class FrontControllerServletV2 extends HttpServlet {
+    private Map<String, ControllerV2> controllerMap = new HashMap<>();
+
+    //프론트 컨트롤러로 요청이 올 경우 jsp 경로를 key로, 경로에 해당하는 컨트롤러를 value로 설정하여 생성
+    public FrontControllerServletV2() {
+        controllerMap.put("/front-controller/v1/members/new-form", new MemberFormControllerV2());
+        controllerMap.put("/front-controller/v1/members/save", new MemberSaveControllerV2());
+        controllerMap.put("/front-controller/v1/members", new MemberListControllerV2());
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //요청 객체 속 URI를 조회
+        String requestURI = req.getRequestURI();
+        //map에서 key인 String uri를 통해 value를 조회
+        ControllerV2 controller = controllerMap.get(requestURI);
+
+        //검증
+        if(controller==null){
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        //검증 통과 시 컨트롤러의 process 메서드 수행
+        MyView view = controller.process(req,resp);
+        view.render(req, resp);
+    }
+}

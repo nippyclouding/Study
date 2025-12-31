@@ -1,0 +1,169 @@
+https://codro.notion.site/2-9cc060f8b2f3460ab1d715dcb9b889ac
+
+
+
+import java.util.*;
+
+
+public class Solution {
+    public static void main(String[] args) {
+        String[] tc1 = {"4514--234495-1","305-44-291501","1-2-34-495-8623","492134545151","623-421523-67341","-5439-59639921","6235-7X3+47-7456","98-76-543-210","512-73-634901","000-999999-22555","064-82-792561"};
+        String[] tc2 = {"1-2-3-456789012","582845-385823","48572-39485-89012","4-5-2-593328484","4958-392945123-","49582039415423","7-3-7-000000000","485723-693812","39482746582734","1-1-1-111111111","A4944-5095-4951","4851293412223"};
+        String[] tc3 = {"592356=5345","49-694-4495-64","5923565345%"};
+
+        int[] result1 = {3,2,1};
+        int[] result2 = {4, 2, 2, 1};
+        int[] result3 = {1};
+
+        if(Arrays.equals(result1, func(tc1))) System.out.println("first pass");
+        if(Arrays.equals(result2, func(tc2))) System.out.println("second pass");
+        if(Arrays.equals(result3, func(tc3))) System.out.println("third pass");
+    }
+
+    static int[] func(String[] sArr) {
+
+        //1. 계좌번호가 유효한지 검증
+        List<String> valid = new ArrayList<>();
+        for(String s : sArr)
+            if(isValid(s)) valid.add(s);
+
+
+        //2. 같은 은행인지 구분
+        /*구분하는 방식 :
+        크기 5의 form 배열을 생성하여
+        0번째 인덱스 : 계좌번호에서의 숫자 개수
+        1번째 인덱스 : 계좌번호에서의 - 개수
+        2번째 인덱스 : 첫 번째 -의 인덱스 위치 (-가 0개라면 0이 들어간다)
+        3번째 인덱스 : 두 번째 -의 인덱스 위치 (-가 1개라면 0이 들어간다)
+        4번째 인덱스 : 세 번째 -의 인덱스 위치 (-가 2개라면 0이 들어간다, -는 최대 3개까지 가능)
+         */
+
+        List<Bank> Banks = new ArrayList<>();
+
+
+
+        for(String ac : valid){
+            //Banks의 은행 목록들 중 계좌번호 ac가 포함된다면 : 해당 은행 계좌 목록에 ac를 추가한다.
+
+            boolean matched = false; //은행과 계좌가 하나라도 매칭되는지
+
+            for (Bank bank: Banks)
+                if (isContain(ac, bank)) {
+                    bank.cnt++;
+                    matched = true;
+                    break;
+                }
+
+            //계좌번호 ac가 어떤 은행에도 포함되지 않을 경우 : 새로운 은행 생성, 계좌 추가, 은행 리스트에 추가
+            if(!matched) {
+                int[] form = new int[5];
+                setForm(ac, form); // ac의 형식에 따라 form을 세팅
+                Bank bank = new Bank(form, 1);
+                Banks.add(bank); //은행 리스트에 새로 생성된 은행 추가
+            }
+
+        }
+
+        //3. 결과 출력 : Banks에 포함된 bank 들의 cnt를 내림차순으로 정렬, 리턴
+        List<Integer> cntList = new ArrayList<>();
+        for(Bank bank : Banks){
+            int acCount = bank.cnt;
+            cntList.add(acCount);
+        }
+
+        Collections.sort(cntList, Collections.reverseOrder());
+
+        return cntList.stream().mapToInt(i->i).toArray();
+    }
+
+    private static void setForm(String ac, int[] form) {
+        char[] cArr = ac.toCharArray();
+
+        int hyponCnt = 0;
+        for(int i=0; i<cArr.length; i++){
+
+            char c = cArr[i];
+
+            //0번째 인덱스
+            if(Character.isDigit(c)) form[0]++;
+
+            //1번째 인덱스
+            if(c=='-') form[1]++;
+
+            //나머지 인덱스 : -의 위치에 따라 인덱스 채우기
+            if(c=='-' &&  hyponCnt==0) {
+                form[2] = i;
+                hyponCnt++;
+            }
+            else if(c=='-' && hyponCnt==1){
+                form[3] = i;
+                hyponCnt++;
+            }
+            else if(c=='-' && hyponCnt==2){
+                form[4] = i;
+                hyponCnt++;
+            }
+
+        }
+
+    }
+
+    private static boolean isContain(String ac, Bank bank) {
+        int[] bankForm = bank.form;
+
+        char[] acArr = ac.toCharArray();
+
+        //현재 ac에 맞는 form
+        int[] form = new int[5];
+        setForm(ac, form);
+
+        //현재 ac에 해당하는 form과 bank의 form이 같은지
+        return Arrays.equals(bankForm, form);
+    }
+
+    private static boolean isValid(String s){
+        char[] cArr = s.toCharArray();
+
+        int numCnt = 0;
+        int hyponCnt = 0;
+
+        for(int i=0; i<cArr.length; i++){
+            char c = cArr[i];
+
+            if(Character.isDigit(c)) numCnt++;
+            else if(c=='-') hyponCnt++;
+            else return false; // 규칙 1 : 계좌번호는 0~9의 숫자와 -만 가진다.
+        }
+
+        //규칙 2 :숫자는 11~14개 사이
+        if(numCnt<11 || numCnt>14) return false;
+        //규칙 3 : -의 개수는 3개 이하
+        if(hyponCnt>=4) return false;
+
+        //규칙 4-1 : 연속된 하이폰이 나타나면 안된다
+        boolean[] isHypon = new boolean[cArr.length];
+        for(int i=0; i<isHypon.length; i++){
+            if(cArr[i] == '-') isHypon[i] = true;
+        }
+
+        for(int i=0; i<isHypon.length-1; i++)
+            if(isHypon[i]==true && isHypon[i+1]==true) return false;
+
+
+        //규칙 4-2
+        if(cArr[0]=='-' || cArr[cArr.length-1]=='-') return false;
+
+        return true;
+    }
+
+    static class Bank{
+        int[] form;
+        int cnt;
+
+        public Bank(int[] form, int cnt) {
+            this.form = form;
+            this.cnt = cnt;
+        }
+    }
+}
+

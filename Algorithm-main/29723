@@ -1,0 +1,97 @@
+https://www.acmicpc.net/problem/29723
+백준 29723 브실이의 입시전략
+
+
+오늘 한 실수
+- for(int j=0; i<sMapKey.size(); j++) : j for문에서 i를 넣는 실수
+- findMap.put(compareString, findMap.get(compareString)) : findMap에 findMap 데이터를 넣는 실수
+- if(compareString==sMapKey.get(j)) : String 비교를 equals로 하지 않고 == 비교한 실수
+- for(int i=M-K; i>0; i++) : 문제에서 요구하는 것과는 다른 잘못된 인덱스 계산
+
+
+불필요한 연산 - 시간 복잡도만 향상한다. 
+
+내가 처음 설계한 코드 : 이중 for문
+Map<String, Integer> findMap = new HashMap<>();
+List<String> sMapKey = new ArrayList<>(sMap.keySet());
+for(int i=0; i<K; i++){
+    String compareString = kList.get(i);
+    for(int j=0; j<sMapKey.size(); j++){
+        if(compareString.equals(sMapKey.get(j))){
+            findMap.put(compareString, sMap.get(compareString));
+            sMap.remove(compareString);
+            break;
+        }
+    }
+}
+
+충분히 for문 하나로 해결 가능하다.
+Map<String, Integer> findMap = new HashMap<>();
+for(int i=0; i<K; i++){
+    String compareString = kList.get(i);
+    findMap.put(compareString, sMap.get(compareString));
+    sMap.remove(compareString);
+}
+
+
+
+제출 코드
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String firstLine = br.readLine();
+        StringTokenizer st = new StringTokenizer(firstLine);
+        List<Integer> firstList = new ArrayList<>();
+        while(st.hasMoreTokens()){
+             firstList.add(Integer.parseInt(st.nextToken()));
+        }
+
+        int N = firstList.get(0);
+        int M = firstList.get(1);
+        int K = firstList.get(2);
+
+        Map<String, Integer> sMap = new HashMap<>();
+        for(int i=0; i<N; i++){
+            String[] s = br.readLine().split(" ");
+            String subject = s[0];
+            int score = Integer.parseInt(s[1]);
+            sMap.put(subject, score);
+        }
+
+        List<String> kList = new ArrayList<>();
+        for(int i=0; i<K; i++){
+            String t = br.readLine();
+            kList.add(t);
+        }
+
+        Map<String, Integer> findMap = new HashMap<>();
+        for(int i=0; i<K; i++){
+            String compareString = kList.get(i);
+            findMap.put(compareString, sMap.get(compareString));
+            sMap.remove(compareString);
+        }
+        int totalScore =0;
+        for(int i : findMap.values())
+            totalScore += i;
+
+        List<Integer> sMapValues = new ArrayList<>(sMap.values());
+        sMapValues.sort(Comparator.naturalOrder());
+
+        int min = totalScore;
+        int max = totalScore;
+        for(int i=0; i<M-K; i++){
+            min += sMapValues.get(i);
+        }
+        for(int i=sMapValues.size()-1; i>=sMapValues.size()-(M-K); i--){
+            max += sMapValues.get(i);
+        }
+        System.out.println(min + " " + max);
+
+    }
+}
+
+
+
