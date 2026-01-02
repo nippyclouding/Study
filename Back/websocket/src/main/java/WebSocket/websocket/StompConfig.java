@@ -11,13 +11,12 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 클라이언트 → 서버 메시지 prefix
-        // /app 으로 시작하는 메시지는 @MessageMapping이 처리
+        // 클라이언트의 전송 경로가 /app 으로 시작하는 메시지들은 모두 컨트롤러의 @MessageMapping이 처리
         config.setApplicationDestinationPrefixes("/app");
 
-        // 서버 → 클라이언트 메시지 prefix (메시지 브로커가 관리)
-        // /topic: 1:N 브로드캐스트 (게임방, 채팅방)
-        // /queue: 1:1 개인 메시지
+        // 메시지 브로커가 /topic, /queue를 구독한 클라이언트에 전달 (/topic/hello ..)
+        // Simple Broker는 메시지를 조작하지 않고 그대로 구독자들에게 자동 포워딩
+        // setApplicationDestinationPrefixes 과 다르게 컨트롤러를 거치지 않고 바로 포워딩
         config.enableSimpleBroker("/topic", "/queue");
     }
 

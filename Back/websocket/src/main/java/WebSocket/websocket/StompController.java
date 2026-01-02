@@ -48,16 +48,16 @@ public class StompController {
     }
 
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/hello")
+    // @GetMapping 은 http 요청 처리, @MessageMapping 은 웹소켓 메시지 처리
+    @MessageMapping("/hello") // /app/hello 로 요청 시 해당 매핑이 처리
+    @SendTo("/topic/hello") // /topic/hello 를 구독한 클라이언트에게 발행
     public ResponseDto basic(RequestDto request) {
         log.info("request: {}", request);
-
         return new ResponseDto(request.getMessage().toUpperCase(), LocalDateTime.now());
     }
 
-    @MessageMapping("/multi")
-    @SendTo({"/topic/hello", "/topic/hello2"})
+    @MessageMapping("/multi") // /app/multi 로 요청 시 해당 매핑이 처리
+    @SendTo({"/topic/hello", "/topic/hello2"}) // 배열로 발행 가능
     public ResponseDto nulti(RequestDto request) {
         log.info("request: {}", request);
 
@@ -67,6 +67,10 @@ public class StompController {
     @MessageMapping("/hello1")
     @SendTo("/topic/hello")
     public ResponseDto annotations(Message<RequestDto> message, MessageHeaders headers, RequestDto request) {
+        // RequestDto request 는 웹소켓 메시지 바디 부분에 대한 데이터만 확인 가능
+        // MessageHeaders headers 는 웹소켓 메시지 헤더만 확인 가능
+        // Message<RequestDto> message 는 웹소켓 메시지 바디와 함께 헤더에 대한 데이터도 확인 가능
+        // Message<RequestDto> = MessageHeaders + RequestDto (body)
         log.info("message: {}", message);
         log.info("headers: {}", headers);
         log.info("request: {}", request);
@@ -77,6 +81,8 @@ public class StompController {
     @MessageMapping("/hello/{detail}")
     @SendTo("/topic/hello")
     public ResponseDto detail(@DestinationVariable("detail") String detail, RequestDto request) {
+        // @DestinationVariable : @PathVariable 과 비슷한 역할, {detail}로 들어온 값을 String detail 에 담아 사용
+        // ex : /app/hello/world
         log.info("detail: {}", detail);
         log.info("request: {}", request);
 

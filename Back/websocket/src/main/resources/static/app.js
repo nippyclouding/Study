@@ -4,6 +4,7 @@ const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:8080/endPointTest'
 });
 // 웹소켓 전용 팩토리에서 webSocket이 아닌 SockJS를 이용하는 스톰프
+// 웹소켓 연결 실패 시 대안으로 long polling, HTTP Streaming 등 다른 기술 사용
 stompClient.webSocketFactory = function () {
     return new SockJS("http://localhost:8080/endPointTest")
   };
