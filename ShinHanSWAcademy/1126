@@ -1,0 +1,261 @@
+1126 WED
+
+12월 22일부터 1월 5일까지 미니 프로젝트(팀별), 그 뒤부터 1차 프로젝트 (mybatis로 진행)
+스프링 하기 전 서블릿, jsp로 미니프로젝트 진행 예정
+12월 중순 즈음 미니 프로젝트 팀이 정해진다.
+한 팀당 6~7명
+
+-------------------------------------------------------------------------
+<복습>
+HTML : 태그, 속성으로 이루어져 있다.
+JS에서 HTML의 태그들은 모두 객체로 된다.
+
+HTML - 미디어 : img, video, a, iframe
+<iframe>은 **“HTML 안에 다른 HTML 문서를 넣는 창(frame)이다.
+가급적이면 자주 사용하지 않는 것이 좋지만 실무에서는 iframe을 많이 사용할 수 밖에 없다.
+<iframe src="https://example.com" width="600" height="400"></iframe>
+
+HTML - form (입력 양식) 속성 : action, method
+
+get : url(http 헤더)에 데이터 노출, 길이에 제한이 있다.
+post : url이 아닌 http body로 데이터 전달, 데이터 노출이 없다.
+HTTP 기본 성질 - 무상태성 (stateless)
+
+HTML 태그 복습 : 예시
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div>
+        <h1>회원 가입을 환영합니다.</h1>
+        <div>
+        
+                <form method ="post" action="signup.html" enctype="multipart/form-data"> <!--multipart form data : application.xxx 방식이 아닌 파일 등 여러 자료 전송 시 사용-->
+                    사용자 정보 <br>
+                    <ul>
+                        <!--input type 중 name 속성이 가장 중요하다-->
+                        <li> id : <input type ="text" name = "id" maxlength="4" required placeholder="id를 입력해주세요"></li> 
+                        <li> email : <input type ="text" name = "email" maxlength="20" placeholder="비밀번호를 입력해주세요"></li>
+                        <li> pw : <input type ="password" name = "pw" maxlength="4" required></li>
+                        <li> pw 확인 : <input type ="password" name = "pwCheck" maxlength="4" required></li>
+                        <li> 나이 : <input type="number"> </li> <!--input type이 number로 지정되면 문자열이 들어올 수 없다.-->
+                        <li> 생년월일 : <input type="date"> </li> <!--input type="date | month | week으로 쓸 경우 사용자가 직접 입력하고, date만 쓸 경우 달력이 보여진다.-->
+                        <li> 프로필 사진 : <input type="file" name = "profile"> </li>
+
+                        <li> 자기 소개 : <textarea name = "introduce"></textarea></li>
+                        <li> 지역 : <select name = "local">
+                                        <option value = "seoul">SEOUL</option>
+                                        <option value = "busan">BUSAN</option>
+                                        <option value = "jeju">JEJU</option>
+                                   </select>
+                        </li>
+                    </ul>
+                </form>
+       
+        </div>
+        <div>
+
+         <hr>
+                <form method = "post">
+                    이벤트와 새로운 소식 <br>
+                        <input type="radio" name="subscribe" value="yes"> 메일 수신    <!--input type="radio"에 name 속성을 지정하지 않으면 여러 선택지 선택이 가능하게 된다.-->
+                        <input type="radio" name="subscribe" value="no"> 메일 수신하지 않음.  <br>
+                        <hr>
+                        hobby<br>
+                        <input type="checkbox" name="hobby" value = "game">game <br>
+                        <input type="checkbox" name="hobby" value = "fishing">fishing <br>
+                        <input type="checkbox" name="hobby" value = "reading">reading <br>
+                        
+                        <hr>
+                        
+                     <input type="submit" value = "회원가입"> <!--value : 버튼에 표시되는 텍스트, submit으로 서버에 전달 시 form action의 위치로 전달-->
+                     <input type="reset" value = "초기화"> 
+                     <input type="button" value="임시저장" onclick="alert('임시저장되었습니다.')">
+                     <button>버튼</button> <!--form 메서드가 post일 때 서버로 전송된다-->
+                     <!--onclick : JS 기능, button을 클릭 시 alert 함수 수행-->
+                </form>
+        
+        </div>
+    </div>
+    
+
+
+</body>
+</html>
+-------------------------------------------------------------------------
+<HTML - 블록, 인라인 태그>
+블록 태그 
+한 줄 전체를 차지하는 요소
+기본적으로 줄 바꿈이 됨
+다른 블록 태그 안에 포함 가능
+대표 태그: <div>, <p>, <h1> ~ <h6>, <ul>, <li>, <section>, <article>, <form>
+
+<div>
+    <p>This is block tag.</p>
+</div>
+출력 : This is block tag.
+
+인라인 태그
+텍스트처럼 이어서 배치되는 요소
+줄 바꿈 안 됨, 부모 요소 안에 다른 인라인 포함 가능
+대표 태그: <span>, <a>, <strong>, <em>, <img>
+
+<p>This is <span>inline</span> tag.</p>
+출력 : This is inline tag.
+-------------------------------------------------------------------------
+<CSS>
+형식
+선택자 {
+  속성1 : 속성값;
+  속성2 : 속성값;
+  ..
+  }
+
+ex)
+p{
+  text-align: center;
+  color: blue;
+}
+
+<<<<선택자 - selector>>>>
+- 문서 내의 특정 영역(범위)을 선택
+- for 선택 영역의 스타일 적용, 이벤트 적용, 웹 크롤링 (파이썬
+
+<선택자 종류>
+
+1. 전체 선택자 : * (전체 영역 선택)
+*{color:blue;} 
+문서 내 모든 태그에 적용이 된다.
+
+
+
+2. 태그 선택자
+ h1{ color:green; }
+ h1 (지정한 태그) 이 들어간 태그에 적용이 된다. 
+
+
+
+3. id 선택자 
+#로 표기, 문서 내에서 하나만 존재한다.
+#target { color : blue; }
+body에서 <p id="target"> ... </p> => target (id 선택자)을 적용시킨다.
+
+
+
+4. class 선택자 
+클래스 선택자는 문서 내 여러 개에 존재한다. dot(점) 으로 선언
+.redColor{ color : red } 
+body에 <h1 class="redColor"> ... </h1> 로 사용 가능
+
+.accent{
+  border : 1px solid #000;
+  padding: 5px;
+}
+
+<h1 class = "accent"> ... </h1>
+클래스 선택자는 선언 시 .을 붙이고, 사용 시 .을 붙이지 않는다.
+
+
+
+5. 속성 선택자 : []
+input[type='text'] { ... } 로 정의해서 사용 (input type이 text인 부분에 적용)
+
+textarea[name="motivation"] {
+        width: 800;      /* 가로 길이 */
+        min-height: 500px; /* 기본 높이 (5줄 정도) */
+        max-height: 500px; /* 최대 높이, 필요하면 스크롤 생성 */
+}
+
+
+
+6. 하위 (자식, 자손) 선택자 
+
+자식 선택자 : 지정 태그의 한 단계 하위 태그 
+바로 한 단계 아래의 자식 요소만 선택
+‘직계 자식’만 스타일 적용됨
+
+div > span { color : green; } // div의 자식인 span에게 지정한다.
+<div>
+  <span>직계 자식 span → 적용됨</span>
+  <p>
+    <span>손자 span → 적용 안됨</span>
+  </p>
+</div>
+
+
+
+7. 자손 선택자 : 지정 태그의 모든 하위 태그
+
+div span { color : green; } // div의 모든 자손 중 span에게 전부 적용된다.
+<div>
+  <span>직계 자식 span → 적용됨</span>
+  <p>
+    <span>손자 span → 적용 됨</span>
+  </p>
+</div>
+
+
+
+8. 다중 선택자 : 여러 요소를 한꺼번에 선택해서 동일한 스타일을 적용하고 싶을 때 사용 (묶어서 스타일 사용) 
+h1, h2, p {
+  color: red;
+}
+=> h1, h2, p 태그에 모두 스타일 적용
+
+.header, .footer, .content {
+  padding: 20px;
+}
+=> 클래스들을 묶어서 스타일 적용
+
+div, .box, #main {
+  border: 1px solid black;
+}
+=> 태그, 클래스, id 선택자들을 묶어서 스타일 적용도 가능
+
+다중 선택자는 단순히 “묶어줬을 뿐”이라서 각 선택자는 따로 작동한다.
+스타일이 충돌되었을 때 다중 선택자의 스타일이 후순위로 밀려난다.
+
+A, B { ... } : A, B에 모두 적용
+AB { ... } : A이면서 B인 것에 적용
+
+
+
+9. 가상 클래스 (위치) 선택자
+특정 위치에 있는 요소를 선택할 때 사용
+
+li:nth-child(3) {
+  color: blue;
+}
+:nth-child(n) : 부모 안에서 n번째 요소 선택, n은 숫자, 표현식 모두 가능
+:first-child, :last-child 등 여러 가상 클래스 선택자들이 있다.
+-------------------------------------------------------------------------
+<텍스트 스타일>
+font-family : "맑은 고딕", 돋움, 굴림; (글꼴 지정)
+font-size: 40px; (크기 지정)
+font-style : italic; (이탤릭체)
+font-weight: bold (굵기 지정)
+
+<글꼴 색>
+color: #fff00; (16진수)
+color: rgb(0, 0, 255);
+color: rgba(0, 0, 255, 0.5); (a는 불투명도)
+color: white; 
+
+<텍스트 정렬>
+text-align: right;
+text-align: left;
+text-align: center;
+text-algin: justify; (양쪽에 맞추어 단락 정렬)
+
+<줄 높이 조절>
+수직 정렬에서 유용하다.
+line-height: 24px; //절대 크기 적용
+line-height: 2.0; // 폰트 크기의 2배 적용
+line-height: 200%; //폰트 크기의 2배 적용 (2.0과 동일)
+-------------------------------------------------------------------------

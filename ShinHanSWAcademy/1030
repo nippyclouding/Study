@@ -1,0 +1,46 @@
+1030 THU
+
+인스턴스 : static이 없다, 객체 생성 후 객체를 통해 사용
+static : static이 있다, 클래스를 통해 사용, 공유
+
+final : 마지막
+final class : 상속 불가
+final method : 재정의(오버라이딩) 불가
+final field : 변경 불가 
+final static : 상수
+
+class Test extends String {} : 불가, String 클래스도 final 클래스이기 때문이다.
+
+다형성 : 실행 코드는 하나인데, 다르게 실행된다.
+
+SmartPhone myPhone = new SmartPhone("갤럭시", "은색");
+
+Phone p = myPhone; //부모 타입에는 자식 타입을 담을 수 있다. (업캐스팅)
+SmartPhone s = (SmartPhone) p; 다운 캐스팅(강제 형변환) - 반드시 원래 자식이었다가 부모로 형변환된 객체만 
+
+Phone p2 = new Phone(""); //p2 = 부모 타입
+SmartPhone s2 = (SmartPhone) p2; //런타임 에러, 자식 타입은 부모 타입을 담을 수 없다.
+
+객체 타입 확인 방법 : instanceof
+if(child instanceof Child) ... 
+
+추상 클래스 - 실무에서 개발할 때는 거의 사용하지 않을 것이다.
+추상 클래스로 이루어진 라이브러리들은 많다.
+1. 다른 클래스들이 추상 클래스를 상속받을 수 있다.
+2. 추상 메서드가 클래스에 하나라도 있다면 해당 클래스는 추상 클래스이다.
+3. 클래스 앞에 abstract를 붙인다. public abstract class Hello{ ... }
+4. 추상 클래스는 직접 객체를 만들 수 없으며 상속한 하위 클래스에서 객체가 생성될 수 있다. 
+  추상 클래스 존재 자체가 상속을 위한 것이다. 객체를 생성하지 못해도 생성자가 존재하긴 한다.
+- "하위 클래스 객체가 생성될 때 추상 클래스의 멤버들도 함께 초기화된다"
+- "하나의 객체 안에 추상 클래스 부분과 구체 클래스 부분이 모두 포함된다"
+- "추상 클래스의 생성자가 호출되어 추상 클래스 부분을 초기화한다"
+
+추상 메서드 - 구현되어있지 않은 메서드, 하위 타입에서 반드시 오버라이딩 필요
+abstract void func();
+
+인터페이스
+인터페이스에 선언한 변수들은 자동으로 컴파일 타임에 public static final 키워드가 붙는다.
+public interface Ex{
+  int MAX_VALUE = 10; 
+  //public static final int MAX_VALUE = 10;
+}

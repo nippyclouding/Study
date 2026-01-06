@@ -1,0 +1,238 @@
+1125 TUE
+
+----------------------------------------------------------------------------------
+<HTML 기본>
+VS Code - extension - live server 설치
+VS Code에서 html 작성 후 command l, o 입력 시 html 실행 (5500포트, 윈도우에서는 alt lo)
+fn + f12 : 개발자 도구
+! tab : html에서 뼈대 자동완성
+
+<html lang="en"> </html>
+<html> </html> : 태그명
+lang : 속성
+"en" : 값
+
+=> <tag 속성명 = "값"> </tag> 로 표시된다.
+XML 파일도 tag, 속성명, 값으로 이루어져 있으며 상대적으로 엄격하다.
+HMTL 파일은 상대적으로 유연하다, </body>를 마지막에 쓰지 않아도 실행 시 </body>가 자동으로 들어간다. (개발자 도구에서 확인 가능)
+
+HTML에서의 주석 : <!--- --->
+복잡한 HTML의 경우 '구조'를 파악하는 것이 중요하다.
+
+HTML 구조를 나타내는 태그
+<header> </header> : <head> 태그와 다르다. 웹의 주로 맨 위쪽, 왼쪽에 있으며 검색창, 사이트 메뉴를 주로 삽입
+<nav> </nav> : 다른 위치, 다른 웹 문서로 연결하는 링크, 웹 문서의 위치에 영향을 받지 않기 때문에 헤더, 푸터, 사이드바 안에도 포함될 수 있고 독립적으로 사용될 수도 있다.
+<main> </main> : 메인 컨텐츠가 들어있는 태그, 웹 문서에서 한 번만 사용할 수 있다. 웹 문서바다 다르게 보여주는 내용으로 구성 (메뉴, 사이드바, 로고 등과 같이 다른 곳에도 들어간 정보는 넣을 수 없다.)
+<article> </article> : 웹에서 실제로 보여주고 싶은 내용을 넣는다. (블로그 포스트, 뉴스 기사 ..)
+
+div : 영역을 나누는 태그
+<div id="wrap">
+  <div id="header" role="banner"> ... </div>
+  <div id="container" role="main" ... </div>
+  <div id="footer" roler="contentinfo .. </div>
+</div>
+실무에서는 <div> </div>로 모두 해결한다. (<div id = "container"> .. </div>) // div : 구분하지 않을 때 기본 설정
+
+
+HTML, CSS, JS는 브라우저(클라이언트)에서 동작, JSP는 서버에서 동작 
+=> JSP에서의 주석은 브라우저로 넘어올 때 주석이 없어지지만 HTML은 브라우저에서 동작하기에 개발자 도구에서 주석을 직접 확인할 수 있다.
+
+----------------------------------------------------------------------------------
+<HTML 태그>
+<h1> </h1> // h1~6까지 존재 : 제목 태그
+<br> : 줄바꿈 태그
+<p> </p> : 문단 태그
+<hr> : 가로줄
+
+<영역>
+padding : 현재 영역에서 padding 영역 사이의 영역
+margin : (현재 영역+padding 영역)과 경계선 사이의 영역
+
+<inline> : 한 줄 속에 표시
+<block> : 하나의 태그가 하나의 block
+https://velog.io/@goha2010/Block-Inline
+
+HTML의 기본 태그 개념
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        table, th, td{ 
+            border:1px solid #ccc;
+            border-collapse: collapse;
+        }
+        th, td {padding:10px 29px; }
+    </style>
+
+</head>
+<body>
+    <h1>h1 tag</h1>
+    <h2>h2 tag</h2>
+    <h3>h3 tag</h3>
+    <h4>h4 tag</h4>
+    <h5>h5 tag</h5>
+    <h6>h6 tag</h6>
+
+    <hr>
+
+    <p>
+        This is P tag.<br>
+        This is P tag.
+    </p>
+    <br>
+
+    "This is <b>b</b> tag" <br>
+    "This is <Strong>Strong</Strong> tag"
+
+    <p>
+        This is in P for ol, ul.
+        li is 'list' short word.
+        <ol>
+            <li>this is ol's li 1</li>
+            <li>this is ol's li 2</li>
+            <li>this is ol's li 3</li>
+        </ol>
+
+        <ul>
+            <li>this is ul's li 1</li>
+            <li>this is ul's li 2</li>
+            <li>this is ul's li 3</li>
+        </ul>
+    </p>
+
+
+    <hr>
+    <!--Table-->
+    <p>
+        TABLE <br>
+        Use table tag to make table. <br>
+        Use 'tr' to make table row. <br>
+        Use 'th' to make table header, and if you don't want to make header, it can be passed. <br>
+        Use 'td' to insert data.
+        
+    </p>
+    <table>
+        <tr> <!--table row-->
+            <th></th>
+            <th>field 1</th> <!--th : table header-->
+            <th>field 2</th>
+            <th>filed 3</th>
+        </tr>
+        <tr>
+            <td rowspan = 2>list</td> <!--rowspan : row 방향으로 2칸 병합 // colspan은 col 방향으로 병합한다.-->
+            <td>data 1</td> <!--td : table data-->
+            <td>data 2</td>
+            <td>data 3</td>
+        </tr>
+        <tr>
+            <td>data 4</td>
+            <td>data 5</td>
+            <td>data 6</td>
+        </tr>
+    </table>
+
+</body>
+</html>
+
+----------------------------------------------------------------------------------
+
+<HTML Media>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>
+        <img src = "img/test1.png" alt="대체 텍스트" height="150"> <!--height만 줄여도 같은 비율로 너비가 줄어든다.-->
+        <h4><i>Since 1999</i></h4>
+    </p>
+
+    <p>
+        <img src = "/03/img/test2.png" alt="hello" width = "150"><!--width만 줄여도 같은 비율로 높이가 줄어든다.-->
+        <h4><i>Remains in my dream</i></h4>
+    </p>
+
+    <video src="video/test.mp4" controls width="700"></video> <!--controls 속성으로 비디오 재생, 정지를 할 수 있다.-->
+    
+    <!--유튜브 영상을 가져올 경우 유튜브 영상 - 소스코드 복사 후 html에 바로 붙여넣기 시 자동으로 태그까지 적용해서 넣어진다.-->
+    <!--유튜브 영상을 가져올 경우 영상 재생 시 트래픽은 유튜브 서버가 담당한다.-->
+    <iframe width="1141" height="642" src="https://www.youtube.com/embed/0t8RovnvRsI" title="AI 대장, 엔비디아 CEO의 예측 &quot;프로그래머 될 필요 없다…생물학 연구해야&quot; / SBS / #D리포트" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    <hr>
+    <!--a href 사용-->
+    <p>
+        태그 열기, a href="링크 주소" > text 또는 이미지 a태그 닫기 : 클릭 시 현재 페이지에서 다른 사이트 이동
+    </p>
+    <a href="https://www.google.com">click</a> <br>
+    <p>
+        태그 열기, a href="링크 주소" target="_blanck"> text 또는 이미지 a태그 닫기 : 클릭 시 현재 페이지에서 새로운 페이지 생성 후 이동
+    </p>
+    <a href="https://www.google.com" target="_blank">click></a>
+
+</body>
+</html>
+------------------------------------------------------------------------------------------------------------------------------
+<HTML FORM>
+*매우 중요, 암기 필수
+
+form : 사용자가 입력 -> 서버에 전달할 수 있도록 하는 것
+
+<form [속성="속성값"]> 
+...
+</form>
+
+<form 속성>
+method : 전송 방식, get과 post만 존재
+생략 시 get 방식
+- get 방식 : 쿼리 파라미터 (쿼리 스트링) 방식, ?이름=값  & 이름=값 // url에 노출된다, 길이에 제한
+- post 방식 : url에 노출되지 않는다, 데이터 전송 시 사용
+
+action : 전송할 위치
+생략 시 현재 주소로 전송
+
+<form id="concern-form" method = "post" action = "/concern">  ... </form>
+=> post 방식으로 서버의 /concern에 요청 
+
+<form> <!--method 생략 시 get, action 생략 시 현재 위치로 전달-->
+
+    ID : <input type = "text" name = "id" required> <br> <!--required는 반드시 사용자가 입력을 해야하는 공간임을 나타낸다.-->
+    PW : <input type = "password" name = "password"> <br>
+
+    성별 :  <input type ="radio" name = "gender" value="남" >남자  <!--라디오박스-->
+           <input type ="radio" name = "gender" value="여" >여자 <br>
+       
+    취미 : <br>
+          <input type="checkbox" name="hobby" value="game">게임 <br>
+          <input type="checkbox" name="hobby" value="game">영화 <br>
+          <input type="checkbox" name="hobby" value="game">독서 <br>
+          <input type="checkbox" name="hobby" value="game">낚시 <br>
+          <!--checkbox는 다중 선택이 가능하다.-->
+       
+    <input type="submit" value = "로그인"> <!--value : 버튼에 표시되는 텍스트-->
+</form>
+
+
+실제 전송 시 /form.html?id=입력id&password=입력pw & ... 으로 url의 쿼리 파라미터 get 방식으로 전달된다.
+http://127.0.0.1:5500/03/form.html?id=testId&password=testPw&gender=%EB%82%A8&hobby=game&hobby=game&hobby=game&hobby=game
+
+<form>
+    id : <input type="text" name="id" value="a" maxlength="4" required>
+</form>
+
+input 태그의 text, password 속성 중 name, value, maxlength, required는 기억하기
+- name : 서버에서 받을 파라미터 명칭
+- value : 입력될 텍스트 필드에 먼저 보여지는 데이터 
+- maxlength : 텍스트 필드에 입력 가능한 최대 문자 길이
+- required : 필수로 입력되어야 할 값임을 알린다.
+
+input 태그의 radio, checkbox 속성 중 value는 서버에서 받을 파라미터 명칭을 의미한다. (text의 name과 동일)
+
+------------------------------------------------------------------------------------------------------------------------------

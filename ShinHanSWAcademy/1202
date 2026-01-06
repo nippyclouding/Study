@@ -1,0 +1,126 @@
+1202 TUE
+------------------------------------------------------------------------------------------------------------------------------------------
+<Grid>
+플렉스 박스와 다르게 항목 배치 시 가로와 세로 방향을 모두 사용
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container{
+            display:grid; /*블록 레벨의 그리드 컨테이너*/
+            grid-template-columns: 100px 200px 300px; /*가로 세로*/
+            grid-template-rows: 50px 100px;
+            
+        }
+        .items{
+            text-align : center;
+            border : 1px soloid black;
+        }
+        .items:nth-child(even){ /*가상 선택자, 부모 요소 안에서 짝수 번째 선택*/
+            background-color: orange;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    <div class = "container">
+        <div class = "items">1</div>
+        <div class = "items">2</div>
+        <div class = "items">3</div>
+        <div class = "items">4</div>
+        <div class = "items">5</div>
+        <div class = "items">6</div>
+    </div>
+    
+</body>
+</html>
+------------------------------------------------------------------------------------------------------------------------------------------
+<JS>
+브라우저에서 값 검증하는 용도로 사용
+html(DOM 변경)/css 조작
+이벤트 제어
+서버로 요청 (값 전송) - submit, ajax (비동기로 데이터 전송이 가능)
+백엔드 역할 (node.js)
+인터프리터 언어 (소스를 한 줄씩 번역 -> 실행)
+브라우저 엔진 (jit 방식처럼 실행 중에 필요한 부분을 즉시 컴파일)
+=> 인터프리터 + jit 컴파일 방식 
+동적 타이핑 : 변수 선언 시 변수 타입을 선언하지 않는다
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+<script>
+    //변수 선언 시 변수 타입 선언하지 않는다
+    a = 1; //숫자
+    console.log(typeof(a));
+
+    //숫자로 선언한 a를 문자열로 타입 변환
+    a = "이름"; //문자열
+    console.log(typeof(a)); 
+
+    /*
+    타입 종류 
+    - number
+    - String
+    - boolean
+    - object
+    - function (일급객체)
+    - null, undefined
+    */
+
+    /*
+    변수 선언 : var, let, const
+    var 사용 시 문제점 
+    - var a = 1 선언 후 var a = 2로 재선언 시 에러를 발생하지 않는다.
+    - console.log(k)를 먼저 실행 후 var k = 1로 선언 시 console.log 실행 시점에는 k가 선언되지 않았는데도 undefined만 출력되며 에러가 나지 않는다.
+    console.log(k)를 먼저 실행한다면 console.log 위에 var k를 자동으로 생성 후 실행하기 때문, hoisting
+
+    let : var 대신 사용하는 변수
+    let d = 10;
+    let d = 20; => 재선언 불가
+    d = 20; 재할당은 가능
+    */
+
+    //배열
+    const f = [1, 2, 3];
+    f[0] = 4;
+    console.log(f); // 4, 2, 3
+    //const 상수로 선언했지만 f는 주솟값을 가진 배열이기 때문에 배열 내부 값을 변경 가능
+
+    //템플릿 리터럴
+    let name = "kim";
+    let text = `hello, my name is ${name}`; // `(~)를 사용
+    alert(text);
+
+    /*
+    배열
+    - 길이 제한이 없다.
+    - 타입 제한이 없다
+    - []로 사용
+    */
+   let season = ["spring", "summer", "autumn", "winter"];
+
+
+   //자동형변환
+   let g = 1;
+   let h = '2';
+   let i = g + h; //i는 String타입이 된다
+   let i2 = g + Number(h); //i2는 number타입이 된다. 
+   let i3 = g + parseInt(h); //i3도 number타입이 된다.
+   console.log(i, typeof(i));
+   console.log(i2, typeof(i2));
+   console.log(i3, typeof(i3));
+
+   //문자 -> 숫자 : parseInt, Number
+   //숫자 -> 문자 : String(), .toString()
+
+   let g2 = String(g); //숫자 -> 문자 변환
+   let g3 = g.toString(); //숫자 -> 문자 변환
+   console.log(g2, typeof(g2));
+   console.log(g3, typeof(g3));
+   //.toString(16) : 16진수로 변환
+
+</script>

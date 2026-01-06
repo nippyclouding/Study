@@ -1,0 +1,270 @@
+1127 THU
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<복습>
+아래 부분은 반드시 외우기
+
+FORM 관련 => 반드시 외우기
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post" action="form.html" enctype="multipart/form-data">
+        아이디:<input type="text" name="id" value="a" maxlength="5" required autofocus readonly><br>
+        비밀번호:<input type="password" name="password" placeholder="비밀번호를 입력해 주세요"><br>
+        성별 :   <input type="radio" name="gender" value="남" id="gender1" checked><label for="gender1">남자 </label>
+                <input type="radio" name="gender" value="여" id="gender2"><label for="gender2">여자</label><br>
+        취미 :   <input type="checkbox" name="hobby" value="게임">게임<br>
+                <input type="checkbox" name="hobby" value="영화">영화<br>
+                <input type="checkbox" name="hobby" value="독서" checked>독서<br>
+                <input type="checkbox" name="hobby" value="낚시">낚시<br>
+        나이 : <input type="number" name="age"><br>
+        생일 : <input type="date" name="birth"><br>
+        프로필사진 : <input type="file" name="profile" multiple><br>
+        자기소개 : <textarea name="introduce">안녕하세요</textarea><br>
+        지역 : 
+        <select name="local">
+            <option value="서울">서울</option>
+            <option value="부산" selected>부산</option>
+            <option value="제주">제주</option>
+        </select>
+        <input type="hidden" name="member_no" value="1">
+        <input type="image" src="img/logo.png"/>
+        <input type="submit" value="회원가입">
+        <input type="reset" value="초기화">
+        <input type="button" value="임시저장" onclick="alert('임시저장되었습니다.')">
+        <button>버튼</button>
+    </form>
+</body>
+</html>
+
+취미를 DB에 저장하는 방식 (취미는 여러 개 저장될 수 있기 때문에 고민이 필요)
+-방법 1 : hobby 개수만큼 열을 생성
+hobby1 : 0/1
+hobby2 : 0/1
+hobby3 : 0/1
+hobby4 : 0/1 
+0 : 취미가 아니다, 1 : 취미이다.
+단점 : hobby 열이 늘어날 때마다 hobby 열을 DB에서 추가해야 한다.
+
+-방법 2 : 정규화
+회원 PK와 취미 값에 대한 새로운 테이블을 생성(회원 PK : 회원 테이블에서 가져온 기본키)
+<회원 PK, 취미값>
+1 : 1  //회원 번호 1번이 취미 1번을 가진다
+1 : 2  //회원 번호 1번이 취미 2번을 가진다
+1 : 3  //회원 번호 1번이 취미 3번을 가진다
+1 : 4  //회원 번호 1번이 취미 4번을 가진다
+정규화가 항상 좋지만은 않다. (트레이드 오프를 고려하여 생각하기)
+
+<input type = "text"  name="id" value="a">
+서버에서 request.getParameter(id) 시 value인 a가 리턴된다.
+가급적 DB 테이블의 열 이름, 클래스 필드 이름, form에서의 name 이름은 모두 동일하게 선정하기
+
+<select> 태그는 HTML에서 드롭다운 메뉴(선택 목록) 를 만드는 태그야.
+CSS는 이 <select> 태그의 디자인을 바꿀 때 사용되고, 기본 구조는 HTML에서 만들어.
+
+✔️ <select> 태그
+사용자가 여러 옵션 중에서 하나 또는 여러 개를 선택할 수 있게 해주는 입력 요소(input)
+
+<select>
+    <option value="apple">사과</option>
+    <option value="banana">바나나</option>
+    <option value="grape">포도</option>
+</select>
+
+드롭다운 리스트가 화면에 나타나고 사용자가 원하는 항목을 선택 가능
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+SELECTOR 관련 => 반드시 외우기
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <title>Document</title>
+    <!--
+    선택자 - selector
+    - 문서내의 특정 영역(범위)를 선택
+    - 왜? 선택한 영역의 스타일 적용, 이벤트 적용, 크롤링
+
+    * 선택자 종류
+    - 전체 : *
+    - 태그
+    - 아이디 : #
+    - 클래스 : .
+    - 속성 : []
+    - 자식/자손 : > / 공백
+    - 다중 : 여러개(,) 동시에(공백없이)
+    - 가상클래스 (위치) : nth-child(n)
+    -->
+
+    <style>
+        /* 전체 선택자 */
+        /* 
+        * {
+            color:blue;
+        } 
+        */
+        /* 태그 선택자 */
+        /*
+        h1 {
+            color:blue;
+        }
+        */
+        /* 
+        아이디 선택자 #
+        아이디는 문서내에서 하나만 존재 (여러 개가 존재할 수도 있지만, 형식 상 하나만 사용하도록)
+        
+        #target {
+            color : blue;
+        }
+        */
+        /*
+        클래스 선택자 .
+        class는 문서내에서 여러개 존재
+        
+        .redColor {
+            color : red;
+        }
+        */
+        /*
+        속성 선택자 []
+        
+        input[type='text'] {
+            background-color: yellow;
+        }
+        */
+        /*
+        자식 : 바로 밑에 있는것 A > B : A 바로 밑에 B
+        자손 : 아래 있는 모든것 A B : A 밑에 있는 모든 B
+
+        div > span : div 바로 밑에 span
+        div span : div 밑에 모든 span
+        
+        div  span {
+            color : green;
+        }
+        */
+        /*
+        다중 (여러개 <-> 동시에)
+        A,B -> A랑 B랑
+        AB -> A이면서 B인것
+        
+        p.redColor {
+            color : aqua;
+        }
+        */
+        /*
+        가상 클래스 (위치)
+        몇번째 요소
+        */
+        li:nth-child(2) {
+            color:red;
+        }
+
+        p#target {
+            color :blue;
+        }
+        p {
+            color :#f00 !important;
+        }
+
+        * {
+            font-family:  "Nanum Gothic", sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="redColor">제목1</h1>
+    <p  class="redColor">내용 1</p>
+    <p id="target" style="color:brown">내용 2</p>
+    <p>내용 3</p>
+    <input type="text"><br>
+    <input type="password"><br>
+    <div>
+        <span>
+            안녕하세요
+        </span>
+        <p>
+            <span>반갑습니다.</span>
+        </p>
+    </div>
+    <span>안녕하세요</span>
+    <ul>
+        <li>후라이드치킨</li>
+        <li>양념치킨</li>
+        <li>마늘치킨</li>
+    </ul>
+</body>
+</html>
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+<BOX>
+박스 = 레이아웃
+박스 모델은 블록인지, 인라인인지에 따라 나열 방법이 달라진다.
+블록 : 요소를 삽입했을 때 혼자 한 줄을 차지 (해당 요소의 너비가 100%, 블록 레벨 요소의 왼쪽, 오른쪽에 다른 요소가 올 수 없다)
+
+content-box
+넓이 = 컨텐츠 width만 포함
+높이 = 컨텐츠 height만 포함
+
+border-box (content+padding+border까지를 box로 인식)
+넓이 = width  + margin 
+높이 = height + margin 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        div{
+            width: 100px;
+            height: 100px;
+            padding : 10px;
+            margin : 10px;
+            border : 10px solid black;
+        }
+        .box1{
+            background-color: red;
+            box-sizing: content-box; /*기본값과 동일해서 변화가 생기진 않는다. 패딩, 테두리를 포함하여 너빗값을 지정*/
+        }
+        .box2{
+            background-color: yellow;
+            box-sizing: border-box; /*border 사이즈만큼 박스 크기가 기본값에 비해 조금 작아진다. 콘텐츠 영역만 너빗값을 지정하기 때문 (패딩, 테두리는 제외)*/
+        }
+        /*인라인 태그는 width, height가 적용되지 않는다. mergin은 좌/우만 적용된다.*/
+        #target{
+            display: inline-block;
+            width:300px;
+            height: 100px;
+            background-color: gray;
+            margin:10px;
+        }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+
+    <span>Hello.</span>
+    <span id="target">My name is Kim.</span> <!--span 태그는 inline이지만, #target에서 display: inline-block 적용 시 inline과 block의 특징을 같이 적용 가능-->
+    <span>Greet to meet you.</span>
+    <!--inline-block은 이 두 요소의 장점을 섞은 것
+        inline처럼 행동: 다른 요소들과 한 줄에 나란히 배치, 옆으로 쭉 이어 붙일 수 있음
+        block처럼 행동: width (너비), height (높이), margin (바깥 여백), padding (안쪽 여백) 속성을 모두 자유롭게 설정 가능 -->
+
+    <div class = "box1"></div>
+    <div class = "box2"></div>
+</body>
+</html>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

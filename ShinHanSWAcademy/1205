@@ -1,0 +1,43 @@
+1205 FRI
+------------------------------------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+    $(function () {
+        $(".btn").click(function () {
+            let kor = Number($("#kor").val());
+            let eng = Number($("input").eq(1).val());
+            let math = Number($("input").eq(2).val());
+
+            let sum = kor + eng + math;
+            let avg = sum / 3;
+
+            $("input").eq(3).val(sum);
+            $("input").eq(4).val(avg.toFixed(2));
+        });
+    });
+</script>
+</head>
+<body>
+    
+    <button class = "btn">버튼1</button>
+    <button class = "btn">버튼2</button>
+    <button class = "btn">버튼3</button>
+    <button class = "btn">버튼4</button>
+    
+    <hr>
+    
+    국어 : <input type = "text" id = "kor" value = "30"> <br>
+    영어 : <input type = "text"> <br>
+    수학 : <input type = "text"> <br>
+    합계 : <input type = "text"> <br>
+    평균 : <input type = "text"> <br>
+    
+</body>
+</html>
+------------------------------------------------------------------------------------------------------

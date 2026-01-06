@@ -1,0 +1,209 @@
+1204 THUR
+-----------------------------------------------------------------------------------------------------
+<문서 객체 모델 DOM>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id = "detail">
+        <ul>
+            <li>원산지 : 에티오피아</li>
+            <li style="display:none">지역 : 예가체프 코레체</li>    <!--display:none으로 화면에 보여지지 않음-->
+            <li style="display:none">농장 : 게뎁</li>
+        </ul>
+    </div>
+
+    <script>
+        let detail = document.querySelector(`#detail > ul`); // detail id 선택자 속 ul 태그 조회
+        console.log(detail.innerText);  //화면에 보이는 텍스트만
+        console.log(detail.innerHTML);  //전체 HTML
+        console.log(detail.textContent);//숨겨진 텍스트까지 모두
+    </script>
+</body>
+</html>
+
+
+
+<input type="text" id="age" value = "20"> 
+
+<script>
+    let age = document.querySelector("#age").value;
+    console.log(age);
+    console.log(typeof(age)); // ui에서 입력받는 것들은 모두 String 타입이다. age = String으로 출력  
+</script>
+
+-----------------------------------------------------------------------------------------------------
+<이벤트>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        /*
+        자바스크립트에서 이벤트 적용 방법
+        1. inline : 요소(태그)에 속성으로 지정
+        2. 속성연결방식
+        */
+        window.onload = function () {
+            let btn2 = document.getElementById('btn2');
+            console.log(btn2);
+            // btn2.onclick = function() {
+            //     console.log('버튼2');
+            // };
+            function test() {
+                console.log('버튼2');
+            }
+            btn2.onclick = test;
+            btn2.onclick = function() {
+                console.log('버튼2-1');
+            };
+            // 3. 리스너 연결방식
+            let btn3 = document.getElementById('btn3');
+            btn3.addEventListener('click', function() {
+                console.log('버튼3');
+            });
+            btn3.addEventListener('click', function() {
+                console.log('버튼3-1');
+            });
+        };
+
+        
+    </script>
+</head>
+<body>
+    <input type="button" id="btn1" value="버튼1" onclick="console.log('이벤트1');console.log('이벤트2');">
+    <input type="button" id="btn2" value="버튼2">
+    <input type="button" id="btn3" value="버튼3">
+</body>
+</html>
+
+-----------------------------------------------------------------------------------------------------
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #subject {
+            width:300px;
+            height:25px;
+        }
+        #btn {
+            height : 30px;
+            width:60px;
+            background-color: black;
+            color:white; 
+        }
+    </style>
+    <script>
+        function newRegister() {
+            const newItem = document.createElement("li");
+            const subject = document.querySelector("#subject");
+            const newText = document.createTextNode(subject.value);
+
+            newItem.appendChild(newText);
+
+            const itemList = document.querySelector('#itemList');
+            itemList.appendChild(newItem);
+            subject.value = '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.querySelector('#btn');
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                newRegister();
+            });
+            document.querySelector('#subject').addEventListener('keypress', function(e) {
+                //e.preventDefault();
+                console.log(e.keyCode);
+                if (e.keyCode == 13) {
+                    newRegister();
+                }
+                //newRegister();
+            });
+        })
+    </script>
+</head>
+<body>
+    <h1>Web Programming</h1>
+    <p>공부할 주제를 기록해 보세요</p>
+    <input type="text" id="subject" autofocus>
+    <button id="btn">추가</button>
+    <hr>
+    <ul id="itemList"></ul>
+</body>
+</html>
+
+-----------------------------------------------------------------------------------------------------
+
+JQuery : 자주 사용하는 기능(함수)들을 모아둔 라이브러리
+선택자로 메서드를 실행
+dom 조작
+css 조작
+이벤트 제어
+애니메이션 제어
+ajax 
+
+
+사용 방법
+$('선택자') -> jquery 객체
+$('선택자').메서드() 실행
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+        //선택자
+        window.onload = function(){
+            //전체 선택자
+            $("*").css('color', 'blue') //.을 찍었을 때 전체 제이쿼리 객체가 보여진다.
+            //태그 선택자
+            $("h1").css('color', 'blue') //.을 찍었을 때 전체 제이쿼리 객체가 보여진다.
+            
+
+            console.log($("ul > li"));
+            //jquery를 사용하여 ul 속 li 제어
+            $("ul > li").each(function(i, e) {
+                console.log(e.innerHTML);
+            })
+
+            //jquery를 쓰지 않았을 때
+            let elems = document.querySelectorAll('ul > li');
+            elems.forEach((e,i)=>{
+                console.log(e.innerHTML);
+            })
+
+            let spring = document.createTextNode("Spring");
+            let liElem = document.createElement("li");
+            liElem.appendChild(spring);
+            let ulElem = document.querySelector("ul");
+            ulElem.appendChild(liElem);
+
+        };
+    </script>
+    
+</head>
+<body>
+    <h1>hello</h1>
+
+    <ul>
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>JS</li>
+    </ul>
+</body>
+</html>

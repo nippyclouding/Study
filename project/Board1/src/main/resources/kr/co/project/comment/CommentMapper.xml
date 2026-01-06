@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.project.comment.CommentMapper">
+
+	<insert id="insert" parameterType="kr.co.project.comment.CommentVO">
+		insert into comment (
+			content, writer, parent_no, regdate
+		) values (
+			#{content}, #{writer}, #{parent_no}, now()
+		)
+	</insert>
+	
+	<select id="count" parameterType="kr.co.project.comment.CommentVO" resultType="int">
+		select count(*) from comment
+		where parent_no = #{parent_no}
+	</select>
+	
+	<select id="list" parameterType="kr.co.project.comment.CommentVO" resultType="kr.co.project.comment.CommentVO">
+		select *,
+			(select name from member where no=comment.writer) as writer_name
+		from comment
+		where parent_no = #{parent_no}
+		order by regdate desc
+		limit ${startIdx}, 10
+	</select>
+	<select id="all" parameterType="kr.co.project.comment.CommentVO" resultType="kr.co.project.comment.CommentVO">
+		select *,
+			(select name from member where no=comment.writer) as writer_name
+		from comment
+		where parent_no = #{parent_no}
+		order by writedate desc
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from comment where no = #{no}
+	</delete>
+
+</mapper>

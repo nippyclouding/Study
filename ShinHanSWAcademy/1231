@@ -1,0 +1,59 @@
+1231 WED
+
+<swagger>
+Swagger는 RESTful API를 문서화하고 테스트할 수 있게 해주는 도구입니다.
+핵심 개념
+Swagger = API 명세서 자동 생성 도구
+코드에 간단한 어노테이션만 추가하면, API의 엔드포인트, 파라미터, 응답 형식 등을 자동으로 문서화해서 웹 UI로 보여줍니다.
+왜 사용하나요?
+
+자동 문서화: 코드 변경 시 문서도 자동으로 업데이트
+API 테스트: 문서 페이지에서 바로 API 호출 가능
+프론트엔드와 협업: API 스펙을 명확하게 공유
+백엔드 개발자끼리도: API 구조를 한눈에 파악
+
+Spring Boot에서 사용 예시
+java@RestController
+@RequestMapping("/api/users")
+@Tag(name = "사용자", description = "사용자 관련 API")
+public class UserController {
+    
+    @Operation(summary = "사용자 조회", description = "ID로 사용자 정보를 조회합니다")
+    @GetMapping("/{id}")
+    public UserResponse getUser(
+        @Parameter(description = "사용자 ID") @PathVariable Long id
+    ) {
+        // ...
+    }
+}
+이렇게 작성하면 http://localhost:8080/swagger-ui.html에서 예쁜 API 문서를 볼 수 있습니다.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+페이징 처리 (페이지네이션)
+
+1.sql을 두 번 조회 
+- 페이지 개수를 구하는 sql
+- 해당 페이지의 목록을 조회하는 sql
+
+2. 게시글 총 개수
+- ex : 페이지 당 10개씩 출력일 경우
+전체 페이지 수 = 총 개수 / 10 (페이지 당 개수)
+
+if (전체 페이지 수 % 10 > 0) 총 페이지수 ++
+
+
+3. 페이지 당 개수
+mysql 기준 Limit 명령어 사용 시 LIMIT 시작 인덱스, 페이지 당 개수 (10)
+=> select ... limit 시작 인덱스, 10
+
+시작 인덱스 계산 : (요청한 페이지 번호 - 1) * 10 
+ex : 
+1페이지 : (1-1) * 10 = 0  (select ... limit 0, 10)
+2페이지 : (2-1) * 10 = 10 (select ... limit 10, 10)
+주로 서비스 계층에서 계산한다.
+
+주소 처리
+https://postcode.map.daum.net/guide
+
+

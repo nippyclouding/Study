@@ -1,0 +1,28 @@
+클래스의 필드 = 멤버 변수(변수보다 멤버 변수에 더 가깝다)
+라이브러리 = jar
+신한 DS 코딩테스트 : 알고리즘 3문항, SQL 2문항 총 2시간
+
+인스턴스 변수 : 객체로 사용 (non static)
+static 변수 : 클래스로 사용
+
+
+<static 블럭>
+class MyClass {
+    static int staticField = 10;    // 스태틱 필드 (클래스 소속)
+    int instanceField = 20;         // 인스턴스 필드 (객체 소속)
+    
+    static {
+        System.out.println("static 블럭 실행");  // 클래스 로딩 시 1번만, 출력문이 가장 먼저 실행된다.
+    }
+    
+    {
+        System.out.println("instance 블럭 실행"); // 객체 생성시마다 출력된다.
+    }
+}
+
+final 필드 초기값 설정 방법 : 생성자에서 초기값 대입 or 필드 선언 시 초기값 대입
+
+DTO : 화면에 출력하기 위한 목적
+VO : 데이터를 보관, 전송 목적
+
+

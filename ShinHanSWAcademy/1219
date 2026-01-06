@@ -1,0 +1,104 @@
+1219_FRI
+
+스프링 레거시 개발 환경
+- jdk 11
+- maven (빌드 도구)
+- sts 3.9.18
+- spring 5.2.25
+
+스프링 레거시 프로젝트를 생성하는 방법이 jdk 11, sts 3.9.18에서 가장 편리하기 때문에 해당 버전을 사용한다.
+
+pom.xml에 의존성 코드를 넣으면 maven이 자동으로 해당 파일을 설치한다.
+
+빌드 도구 : 소스 코드를 컴파일, 테스트, 결과물을 패키징 (WAR, JAR)
+외부 라이브러리 사용 시 컴파일을 하려면 외부 라이브러리 jar 파일이 필요하다.
+해당 라이브러리의 jar 파일이 컴파일 시점에 classpath에 포함되어 있어야 한다.
+
+
+<properties>
+		<java-version>11</java-version>
+		<org.springframework-version>5.2.25.RELEASE</org.springframework-version>
+		<org.aspectj-version>1.6.10</org.aspectj-version>
+		<org.slf4j-version>1.6.6</org.slf4j-version>
+</properties>
+
+자바 버전 수정 후 
+alt f5 또는 프로젝트 마우스 우클릭 - maven - pdate maven project 
+=> 빌드 도구 업데이트
+
+Tomcat 이 실행될 때 스프링이 ~.java 클래스를 스프링 컨테이너에 객체로 등록 : 스프링 빈 등록
+@Bean, @Component 등 등록된 .java 클래스만 스프링 컨테이너에 등록한다.
+
+@Controller, @Service, @Repository, @Component, @Bean, @Config 등 모든 애노테이션들은 내부적으로 @Component를 가지고 있다.
+=> 스프링 빈으로 자동 등록된다.
+스프링 빈은 기본적으로 싱글톤으로 관리된다.
+
+빈 등록 방법 : XML 컨테이너 방식, 어노테이션 컨테이너 방식
+@Bean : 어노테이션 방식, 수동으로 직접 @Bean이 붙은 메서드의 리턴 객체를 컨테이너에 등록한다.
+@Component : 어노테이션 방식, 자동으로(새로운 객체가 리턴되지 않아도) 클래스, 메서드 단위에 붙여주면 컨테이너에 빈을 등록한다.
+
+<xml 방식>
+
+AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Beans.class);
+자바 리플렉션 기술로 Beans.class의 정보를 읽어들인다.
+
+	<!--
+	id : 등록할 빈의 이름
+	class : 등록할 빈의 실제 위치
+	property : 주입
+	property name : 등록할 빈의 실제 필드
+	value : 등록할 빈의 실제 필드에 주입할 값
+	ref : 등록할 빈의 실제 필드에 주입할 다른 빈
+	 -->
+	
+
+<bean id="person" class ="chapter01.Person">
+		<property name = "name"> <!-- Person 객체에 name 필드에 kim을 등록, setter 메서드를 호출-->
+			<value>kim</value>
+		</property>
+</bean>
+
+property : 자바 클래스의 필드
+
+
+	<bean id = "person2" class = "chapter01.Person">
+		<constructor-arg>	<!-- new Person("lee", 30)으로 생성 -->
+			<value>lee</value>
+		</constructor-arg>
+		<constructor-arg>
+			<value>30</value>
+		</constructor-arg>
+	</bean>
+constructor : 생성자 설정
+value : 생성자로 들어가는 필드
+
+
+<어노테이션 방식>
+@Configuration, @Bean
+@Bean을 작성한 메서드에서 리턴된 객체들을 모두 스프링 빈으로 설정한다.
+
+<제어의 역전>
+private Repository repository;
+new Repository()로 직접 개발자가 객체를 생성하지 않고, 스프링 컨테이너가 자동으로 필요한 곳을 찾아 타입을 확인 후 주입한다.
+
+외부에서 주입을 받기 위해서는 해당 클래스도 빈으로 등록되어 있어야 한다.
+빈을 등록받는 클래스, 빈 주입 대상이 되는 클래스 모두 빈으로 등록되어야 한다.
+
+<빈 자동 주입>
+@Autowired : 동일, 하위 타입의 빈을 자동 주입
+동일, 하위 타입의 빈이 여러 개 있을 경우 빈이 충돌 => @Autowired 밑에 @Qualifier("빈 등록 메서드()")를 추가한다.
+
+<빈 자동 생성>
+@Component를 클래스 단위에 넣는다.
+@ComponentScan으로 컴포넌트들을 인식, 빈으로 자동 등록
+@Controller, @Service, @Repository는 모두 내부적으로 @Component를 가지고 있다.
+
+뷰 리졸버 클래스
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+prefix : /WEB-INF/views/
+suffix : .jsp
+
+

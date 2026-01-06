@@ -1,0 +1,222 @@
+1117 MON
+
+
+---------------------------------------------------------------------------------------------
+복습
+- sql : DBMS와 통신하기 위한 언어
+
+RDBMS : oracle, mysql, mariadb, my-sql, postgreSQL, DB2, Tibero ..
+업무형 데이터, 정형 데이터
+
+NoSQL : Not only sql, MongoDB (Json), Redis(key-value), elastic search .. 
+
+DQL : select (Q : query - 질의, 요청)
+DML : 조작 insert, update, delect (db 입장에서는 변경)
+DDL : create, alter, drop (테이블 등의 객체 생성, 변경, 삭제 ..)
+DCL : 권한 부여, 회수
+TCL : 트랜잭션 관련, commit, rollback
+
+insert into 테이블명 (컬럼명 .. ) values (값 .. ) // 값의 개수가 컬럼명 개수와 같다면 컬럼명 생략 가능
+update 테이블명 set 컬럼명 = 값 where 조건식
+delete from 테이블명 where 조건식
+
+select (조회)
+반드시 먼저 고민
+- 요구 사항 파악
+1. 어디서 가져올 것인지
+2. 어떻게 가져올 것인지
+3. 무엇을 가져올 것인지
+
+select 컬럼명
+from 테이블
+where 조건식
+group by 컬럼명
+having 조건식 (group by 후 조건)
+order by 컬럼명
+
+값이 null 일때 다른 값으로 대체 : nvl, nvl2 함수 // 컬럼값 is null 로 null인지 확인 가능
+like 연산 : 텍스트 포함 여부 (%, _)
+in : 컬럼값 in (값1, 값2 ..) -> 값이 포함되어있다면 true, 없다면 false // 반대 : not in
+
+union : select 결과를 수직으로 합친다. (중복 제외) // union all : 중복 포함
+
+단일행 함수 : 1개 입력, 1개 출력
+문자열 - upper, lower, replace, substr
+숫자 - round.trunc
+타입 - to_date, to_char, to_number
+조건 - deconde, case
+
+다중행 함수 : 1개 이상 입력, 1개 출력
+집계함수, 그룹핑 함수
+sum, count, avg, min, max ..
+null 제외 후 연산
+
+group by : 그룹핑 // 그룹핑 후 출력 열(select)은 그룹핑한 열 또는 그룹핑 함수
+
+정렬 : asc 오름차순 desc 내림차순
+group by, order by : 여러 열 지정 가능
+
+실행 순서 : from -> where -> group by -> having -> select -> order by
+
+조인 - 1개 이상의 테이블을 연결하여 수평으로 조회
+cross join : 가능한 모든 경우의 수 조인 (행 * 행)
+equi join : 등가 조인, 조건이 일치하는 결과
+non - equi join : 비등가 조인, 등가 조인이 아닌 조인
+outer join : 양쪽 테이블 중 특정 기준으로 조회
+self join : 자신 테이블 조인
+
+등가조인 (내부 조인) - inner join
+외부 조인 - outer join
+
+조인 조건 : 부모 / 자식 테이블
+관계
+1:1 일대일 회원 - 프로필
+1:N 일대다 회원 - 주문
+N:M 다대다 상품 - 주문
+
+내부 조인
+from 테이블 1, 테이블 2
+where 테이블1. 컬럼명 = 테이블2. 컬럼명
+
+from 테이블 1 join 테이블 2
+on 테이블1.컬럼명 = 테이블2.컬럼명
+
+외부조인
+from 테이블1, 테이블2
+where 테이블1. 컬럼명 = 테이블2.컬럼명(+) // 반대쪽에 +
+
+from 테이블1 left join 테이블2 
+on 테이블1.컬럼명 = 테이블2.컬럼명
+
+서브쿼리 : 쿼리 속 쿼리, select 속 select 
+단일행 서브쿼리 : 1개 출력
+다중행 서브쿼리 : 1개 이상 출력
+
+서브쿼리 사용 가능 위치
+- from 절 (inline view)
+- where 절
+- having 절
+- 컬럼 (스칼라 서브쿼리)
+
+
+---------------------------------------------------------------------------------------------
+-- create table 사용 방법
+create table emp_ddl(
+    empno number(4),
+    ename varchar2(10),
+    job varchar2(9),
+    mgr number(4),
+    hiredate date,
+    sal number(7,2),
+    comm number(7,2),
+    deptno number(2)
+);
+
+create table dept_ddl as select * from dept; -- as select로 복제하며 생성할 수도 있다. 
+
+
+
+-- alter table 사용 방법
+create table emp_alter
+    as select * from emp;
+
+-- alter add
+alter table emp_alter
+    add hp varchar2(20);
+-- alter rename
+alter table emp_alter
+    rename column hp to tel;
+
+-- alter modify
+alter table emp_alter
+    modify empno number(5);
+
+-- alter drop
+alter table emp_alter
+    drop column tel;
+    
+
+-- rename 
+rename emp_alter to emp_rename;
+
+-- truncate
+truncate table emp_rename; -- 모든 데이터 삭제 (테이블 구조는 유지)
+
+-- drop
+drop table emp_rename; -- 테이블 자체를 삭제
+
+select * from emp_alter;
+
+
+---------------------------------------------------------------------------------------------
+
+2차 프로젝트 - 데이터 10만 ~ 100만개 정도 사용하기
+
+<INDEX>
+PK 또는 Unique key에서 인덱스는 자동생성된다.
+
+
+-- index 생성
+create index idx_emp_sal
+on emp(sal); -- index를 지정할 열 : sal
+
+-- index 삭제
+drop index idx_emp_sal;
+
+인덱스 장점
+- select(조회 속도)가 빨라진다.
+- 시스템 부하(리소스)를 줄인다. (성능 향상)
+
+인덱스 단점
+- 추가 저장 공간 필요
+- 인덱스 생성(변경) 시간 소요
+- insert, update, delete 성능 저하
+
+<실행 계획과 인덱스 동작>
+
+explain plan (실행 계획)을 통해 인덱스 적용을 확인할 수 있다.
+
+-- 인덱스 생성 (emp 테이블의 ename 컬럼을 idx_emp_ename으로 생성)
+create index idx_emp_ename on emp(ename);
+
+-- 실행 계획
+explain plan for select * from emp where ename = 'SCOTT'; -- ename으로 조회 : 인덱스를 조회한다.
+select * from table(dbms_xplan.display); -- index fange scan : 인덱스를 조회한다.
+
+
+explain plan for select * from emp where job = 'MANAGER'; -- job으로 조회 : 전체를 full로 조회한다.
+select * from table(dbms_xplan.display); -- table access full : 전체를 full 조회 (데이터가 많아지면 느려진다.)
+
+인덱스를 어느 컬럼에 적용해야 하는지
+- where 절이 자주 사용되는 컬럼
+- 조인 조건
+- 범주형 / 날짜 데이터 (중복이 적거나 길이가 정해졌을 때)
+- 정렬하는 컬럼에도  필요 
+
+=> 정렬, 조인, 날짜 검색, 범주형 데이터 등에서 인덱스 적용하기
+
+인덱스 주의점
+PK, UNIQUE에서는 자동으로 인덱스가 생성된다.
+해당 컬럼의 값으로 가공하기 전 상태에서 적용하기
+Like 연산에서 사용 시 유의
+데이터 모델링 시 인덱스 검토 (데이터가 많아질 때 인덱스 검토하기)
+복합 인덱스 (여러 개의 컬럼) - 각각의 컬럼 인덱스로 했을 때와 비교해서 어떤 차이가 있을지
+- 복합 인덱스 vs 단일 인덱스
+
+단일 인덱스 여러 개는 각자 따로 작동함 → 성능 개선 제한적
+
+복합 인덱스는 '선행 컬럼부터 순서대로' 조건이 있을 때 매우 빠름
+복합 인덱스는 첫 번째 컬럼(leading column)이 WHERE절에서 사용될 때 의미가 있으며,
+두 번째, 세 번째 컬럼은 ‘앞에 있는 컬럼 조건이 충족된 경우’에 한해서 사용됨
+복합 인덱스 전체가 WHERE절에 없어도 인덱스 자체는 동작한다.
+
+
+
+--index scan
+select * from dept where deptno = 20;
+
+--range scan
+create index idx_emp_deptno on emp(deptno); --deptno 인덱스 생성
+select * from emp where deptno = 20;
+----------------------------------------------------------------------------------------------------------------
+

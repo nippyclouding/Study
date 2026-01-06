@@ -1,0 +1,65 @@
+1110 MON
+
+String url = "https://www.egovframe.go.kr/home/sub.do?menuNo=10";
+			URL urlObj = new URL(url);
+			System.out.println(urlObj.getProtocol());
+			System.out.println(urlObj.getQuery());
+			InputStream is = urlObj.openStream();
+//			Reader reader = new InputStreamReader(is); // 보조스트림(바이트->텍스트)
+//			int count = 0;
+//			while ((count = reader.read()) != -1) {
+//				System.out.print((char)count);
+//			}
+			// 보조스트림(성능향상)
+			// 바이트기반스트림 -> 텍스트기반으로 변경하는 보조스트림 -> 성능향상보조스트림
+			BufferedReader br = new BufferedReader(new InputStreamReader(urlObj.openStream()));
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
+
+
+스트림 - forEach 부분은 꼭 기억하기
+import java.util.ArrayList;
+import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+public class StreamEx {
+
+	public static void main(String[] args) {
+		// 스트림 : 내부반복자
+		// 반복(처리)을 편하게 사용
+		List<Student> list = new ArrayList<>();
+		list.add(new Student(1,"홍길동"));
+		list.add(new Student(2,"김길동"));
+		list.add(new Student(3,"최길동"));
+		// 출력
+		for (int i=0; i<list.size(); i++) {
+			System.out.println(list.get(i));
+		}
+		list.stream().forEach(s->System.out.println(s));
+		
+		
+	}
+
+}
+
+@Data
+@AllArgsConstructor
+class Student {
+	private int no;
+	private String name;
+}
+
+
+네이버 오픈 api 사용
+https://developers.naver.com/main/
+developers.naver.comdevelopers.naver.com
+NAVER Developers
+네이버 오픈 API들을 활용해 개발자들이 다양한 애플리케이션을 개발할 수 있도록 API 가이드와 SDK를 제공합니다. 제공중인 오픈 API에는 네이버 로그인, 검색, 단축URL, 캡차를 비롯 기계번역, 음성인식, 음성합성 등이 있습니다.
+
+오라클
+https://www.oracle.com/database/technologies/xe-prior-release-downloads.html
+https://www.oracle.com/database/sqldeveloper/technologies/download/

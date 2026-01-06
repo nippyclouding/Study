@@ -1,0 +1,392 @@
+MyBatis 복습
+
+UserMapper.java
+import org.apache.ibatis.annotations.Mapper;
+import java.util.Map;
+@Mapper
+public interface UserMapper {
+    int insert(UserVO vo);       // UserMapper.xml 의 쿼리 id
+    int insertHobby(Map mp);     // Map 으로 hobby 관리 (UserVO - hobby)
+}
+
+UserMapper.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="chapter09.UserMapper">
+
+	<!-- user 테이블 INSERT - selectKey 추가 -->
+	<insert id="insert" parameterType="chapter09.UserVO">
+		<selectKey keyProperty="userno" order="AFTER" resultType="int">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO user (
+		id, password, gender, age
+		, birth, profile_org, profile_real
+		, introduce, local, registdate
+		) VALUES (
+		#{id}, #{password}, #{gender}, #{age}, #{birth}, #{profile_org}
+		, #{profile_real}, #{introduce}, #{local}, NOW()
+		)
+	</insert>
+
+	<!-- hobby 테이블 INSERT -->
+	<insert id="insertHobby" parameterType="map">
+		INSERT INTO hobby (
+			userno, name
+		) VALUES (
+					 #{userno}, #{name}
+				 )
+	</insert>
+</mapper>
+
+UserServiceImpl.java
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+@Slf4j
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private final UserMapper userMapper;
+
+    @Transactional
+    @Override
+    public int insert(UserVO vo, MultipartFile profile) {
+
+        /*
+        @RequestParam 으로 profile 객체를 프론트에서 profile 이름으로 가져온다
+        MultipartFile이 여러 값으로 들어온다면 MultipartFile[] 배열 처리도 가능
+        첨부 파일 처리 (새로운 파일 이름, 저장, vo에 set)
+        */
+
+        if (!profile.isEmpty()) {
+            String org = profile.getOriginalFilename();
+
+            String ext = org.substring(org.lastIndexOf(".")); // 확장자 계산
+            String real = System.nanoTime() + ext; // nanoTime 은 고유 값 취급
+
+            try {
+                profile.transferTo(new File("/Users/aaa/Desktop/" + real)); // 경로 : 실제 파일이 저장될 위치
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // 유저 객체에 적용
+            vo.setProfile_org(org);
+            vo.setProfile_real(real);
+        }
+
+        log.info("before insert : {}" , vo.getUserno()); // userNo가 vo에 들어가지 않는다.
+
+        // user 테이블에 저장
+        int result =  userMapper.insert(vo);
+
+        log.info("after insert : {}" , vo.getUserno()); // userNo가 vo에 들어가있다. (pk 사용 가능)
+
+        // user의 pk로 hobby 테이블에 값 저장
+        if (vo.getHobby() != null) {
+            for(String hobby : vo.getHobby()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("userno", vo.getUserno());
+                map.put("name", hobby);
+                userMapper.insertHobby(map);
+            }
+        }
+        return result;
+    }
+}
+
+UserController.java
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+@Controller
+@RequiredArgsConstructor
+@Slf4j
+public class UserController {
+
+    private final UserService userService;
+
+    @GetMapping("/user/insert")
+    public String insert() {
+        return "user/insert";
+    }
+
+
+    @PostMapping("/user/insert")
+    public String insertUser(UserVO vo, @RequestParam MultipartFile profile,
+                             RedirectAttributes redirectAttributes) {
+        int result = userService.insert(vo, profile);
+        if (result > 0) {
+//			model.addAttribute("msg", "회원가입되었습니다.");
+//			model.addAttribute("cmd", "move");
+//			model.addAttribute("url", "insert");
+            redirectAttributes.addFlashAttribute("msg", "회원가입되었습니다."); // 일회성
+        } else {
+//			model.addAttribute("msg", "회원가입오류");
+//			model.addAttribute("cmd", "back");
+            redirectAttributes.addFlashAttribute("msg", "회원가입오류.");
+        }
+        //return "common/return";
+        return "redirect:insert";
+
+    }
+
+    /* @PostMapping("/user/insert")
+    public String insertUser(UserVO vo,
+                           @RequestParam MultipartFile profile,
+                           HttpServletResponse response,
+                           Model model
+    ) throws Exception {
+
+        int result = userService.insert(vo, profile);
+        if (result > 0 ) {
+            model.addAttribute("msg", "회원가입 완료");
+            model.addAttribute("cmd", "move");
+            model.addAttribute("url", "insert");
+
+            log.info("number of inserted data : {}", result);
+            log.info("userLog : {}", vo);
+        } else {
+            model.addAttribute("msg", "회원가입 오류");
+            model.addAttribute("cmd", "back");
+        }
+        return "common/return";
+
+    }
+     */
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. UserMapper.xml - selectKey
+selectKey는 MyBatis에서 INSERT 후 자동 생성된 키(ID)를 가져오는 기능 (AutoIncrement)
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,  -- 자동 증가
+    username VARCHAR(50),
+    email VARCHAR(100)
+);
+
+UserVO user = new UserVO();
+user.setUsername("kim");
+user.setEmail("kim@example.com");
+// user_id는 DB가 자동으로 생성
+
+userMapper.insert(user);
+
+// 문제: 방금 생성된 user_id 확인 방법
+// user_id는 파일 업로드나 연관 데이터 저장할 때 필요
+=> selectKey로 user_id 조회 가능
+<!-- UserMapper.xml -->
+<insert id="insert" parameterType="UserVO">
+    <selectKey keyProperty="userId" order="AFTER" resultType="int">
+        SELECT LAST_INSERT_ID()    <!-- mysql, mariaDB에서만 LAST_INSERT_ID() -->
+    </selectKey>
+    
+    INSERT INTO users (username, email)
+    VALUES (#{username}, #{email})
+</insert>
+
+동작
+INSERT 쿼리 실행 → user_id = 123 자동 생성
+SELECT LAST_INSERT_ID() 실행 → 123 반환
+UserVO의 userId 필드에 123 자동 설정
+
+UserVO user = new UserVO();
+user.setUsername("kim");
+user.setEmail("kim@example.com");
+
+// System.out.println(user.getUserId());  // 123이 출력되지 않음 (null)
+
+userMapper.insert(user);
+
+System.out.println(user.getUserId());  // 123이 출력된다.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. UserController.java - redirectAttributes.addFlashAttribute
+리다이렉트 후 한 번만 사용할 수 있는 데이터를 전달하는 메서드
+
+일반적인 redirect 문제
+@PostMapping("/user/insert")
+public String insertUser(UserVO user, RedirectAttributes redirectAttributes) {
+    userService.insert(user);
+    return "redirect:/user/login?msg=회원가입 완료";
+}
+
+**문제:**
+URL: http://localhost:8080/user/login?msg=회원가입 완료
+- URL에 메시지가 노출
+- 새로고침하면 메시지가 계속 보인다.
+
+addFlashAttribute로 해결
+@PostMapping("/user/insert")
+public String insertUser(UserVO user, RedirectAttributes redirectAttributes) {
+    userService.insert(user);
+    
+    // Flash Attribute 사용
+    redirectAttributes.addFlashAttribute("msg", "회원가입 완료");
+    return "redirect:/user/login";
+}
+
+**결과:**
+URL: http://localhost:8080/user/login  (다른 주요 정보가 url에 들어가지 않는다.)
+
+- URL에 노출이 되지 않는다.
+- 세션에 임시 저장
+- 한 번만 사용되고 자동 삭제
+
+## 동작 원리
+[클라이언트]                    [서버]
+
+1. POST /user/insert  ──────>  회원가입 처리
+   (회원가입 폼 전송)             msg를 세션에 임시 저장
+                                  
+2.                    <──────  302 Redirect
+                                Location: /user/login
+                                  
+3. GET /user/login    ──────>  세션에서 msg 꺼냄
+                                "회원가입 완료"
+                                msg 자동 삭제
+                                  
+4.                    <──────  로그인 페이지 HTML
+                                (msg 포함)
+                                
+5. 새로고침 (F5)      ──────>  세션에 msg 없음
+                                메시지 안 보임
+
+redirect.addAttribute
+- URL 파라미터 (?key=value)
+- URL 노출, 새로 고침 시 계속 보여지며 String, int 등 기본 타입만 전달 가능 (주로 검색 조건, 페이지 번호 등에서 사용)
+
+redirect.addFlashAttribute
+- 세션에 임시 저장
+- URL 노출이 없고 새로 고침 시 메시지가 사라진다, 한 번만 사용 가능(일회성), 모든 객체 타입 전달 가능 (주로 성공, 실패 메시지, 임시 데이터에서 사용)
+
+
+
+
+
+select MD5('test'); -- MD5 함수로 암호화 가능 (mysql, mariadb에서 사용 가능)
+	<insert id="insert" parameterType="chapter10.UserVO">
+		<selectKey keyProperty="userno" order="AFTER" resultType="int">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO user (
+		id, password, gender, age
+		, birth, profile_org, profile_real
+		, introduce, local, registdate
+		) VALUES (
+		#{id}, MD5(#{password}), #{gender}, #{age}, #{birth}, #{profile_org}
+		, #{profile_real}, #{introduce}, #{local}, NOW()
+		)
+	</insert>
+=> MD5(#{password}) 사용 : 13,user1,361228d0a65bd2355b029b2fe0aad7c1 ..  비밀번호가 암호화되어 들어간다.
+
+HttpSession session
+session.invalidate(); 세션 초기화
+session.removeAttribute("loginSession"); // 로그인 세션만 삭제
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Jackson 라이브러리 : json 객체로 자동 직렬화, 역직렬화
+스프링부트에서는 기본적으로 내장되어있다.
+
+package chapter11;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.List;
+// @ResponseBody 는 메서드 단위로 JSON 변환, @RestController 는 클래스 단위로 JSON 변환
+@RequiredArgsConstructor
+@RestController
+@Slf4j
+public class ApiController {
+
+    // RestController 에서는 Service 계층을 잘 사용하지 않는다.
+    private final UserMapper userMapper;
+
+    @GetMapping("/api/index")
+    public String index() {
+        return "api"; //RestController
+    }
+
+    @GetMapping("/api/user")
+    public UserVO user() {
+        UserVO vo = new UserVO();
+        vo.setId("hong");
+        vo.setAge(30);
+        vo.setGender(2);
+        vo.setRegistdate(new Timestamp(System.currentTimeMillis()));
+
+        return vo;
+    }
+    // RestController
+    // api 요청 시 아래처럼 출력
+    // {"userno":0,"id":"hong","password":null,
+    // "gender":2,"age":30,"birth":null,"profile_org":null,
+    // "profile_real":null,"introduce":null,"local":0,
+    // "registdate":1767072450536,"hobby":null,"formattedRegistdate":"2025-12-30"}
+
+    @GetMapping("/api/index2")
+    public UserVO index2(UserVO vo) {
+        return vo; // 파라미터로 들어온 vo의 값을 출력
+    }
+
+    @GetMapping("/api/userList")
+    public List<UserVO> userVOList() {
+        return userMapper.userList();
+    }
+
+    @PostMapping("/api/userLogin")
+    public UserVO userLogin(UserVO vo) {
+        return userMapper.login(vo);
+    }
+
+    @GetMapping("/user/login2")
+    @ResponseBody
+    public UserVO login2() {
+        return new UserVO(); // @ResponseBody 는 메서드 단위로 JSON 변환, @RestController 는 클래스 단위로 JSON 변환
+    }
+
+    // 파라미터가 JSON 으로 왔을 경우
+    @PostMapping("/api/userLogin2")
+    public UserVO userLogin2(@RequestBody UserVO vo) {
+        return userMapper.login(vo);
+    }
+
+
+    //ResponseEntity : 응답 코드를 직접 설정할 수 있다.
+    @GetMapping("/api/index3")
+    public ResponseEntity<UserVO> index3() {
+        UserVO vo = new UserVO();
+        vo.setId("hong");
+        vo.setAge(30);
+        vo.setGender(2);
+        vo.setRegistdate(new Timestamp(System.currentTimeMillis()));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(vo);
+    }
+}
+
+
+

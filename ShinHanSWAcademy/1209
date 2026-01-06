@@ -1,0 +1,107 @@
+1209
+
+개발 환경
+- JDK, Eclipse, tomcat, oracle ..
+Eclipse는 개발 환경에서만 사용한다.
+
+운영 환경
+- JDK, tomcat, oracle ..
+
+호스트의 이클립스 속 톰캣으로 배포 -> war 파일 생성, tomcat으로 war 파일 실행 => 브라우저에서 요청 시 접속 성공 
+
+WEB-INF 하위에 html을 넣어야 브라우저에서 접근 가능
+
+타임리프, jsp는 내부적으로 서블릿으로 변환되어 수행된다.
+
+톰캣이 서블릿을 실행되게 만든다. (서블릿의 주소, 서블릿을 매핑시켜야 한다 => web-inf 하위 web.xml에 설정)
+서블릿 등록, 서블릿 매핑
+  <servlet>
+  	<servlet-name>aaa</servlet-name>
+  	<servlet-class>sec01.ex01.FirstServlet</servlet-class>
+  </servlet>
+    <servlet>
+  	<servlet-name>bbb</servlet-name>
+  	<servlet-class>sec01.ex01.SecondServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>aaa</servlet-name>
+  	<url-pattern>/first</url-pattern>
+  </servlet-mapping>
+  
+   <servlet-mapping>
+  	<servlet-name>bbb</servlet-name>
+  	<url-pattern>/second</url-pattern>
+  </servlet-mapping>
+
+서블릿 : 서버에서 실행되며 클라이언트 요청에 따라 동적으로 서비스를 제공하는 자바 클래스 
+서블릿 라이프 사이클 : 서블릿 클래스가 생성된 뒤 처음 init() -> 서블릿 로직 실행 (요청이 올 때마다) -> 서블릿 종료 시 destroy() 한 번 수행
+
+서블릿으로 만들기 위해서는 자바 클래스를 extends GenericServlet 또는 extends HttpServlet 으로 상속받아야 한다.
+
+서블릿으로 html 작성 예시
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		System.out.println("doGet method call");
+		
+		res.setContentType("text/html;charset=utf-8");
+		
+		PrintWriter pw = res.getWriter();
+		pw.print("<h1>hello</h1>");
+		pw.close();
+	}
+
+JSP로 html 작성 예시 : first.jsp //http://localhost:8081/pro05/first.jsp  (pro05/first/first.jsp가 아님)
+JSP는 반드시 webapp 하위에 넣어야 한다. (WEB-INF 안에 넣으면 안된다)
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h1>helloJSP</h1>
+</body>
+</html>
+
+스프링 사용 시 가장 먼저 XML 파일에 디스패쳐 서블릿을 등록해야 한다. 
+<servlet-name>myDispatcherServlet</servlet-name> ... 
+
+기존 서블릿 생성 방식 : 클래스 생성, extends HttpServlet, 구현
+또 다른 서블릿 생성 방식 : 서블릿 생성 (new -> other -> web -> servlet) -> url 매핑 추가, 필요한 메서드 체크, 생성 , 메서드 수정
+
+톰캣 : 서블릿 컨테이너 역할, 클라이언트의 HTTP 요청을 서블릿으로 처리
+서블릿 기능 : 클라이언트로부터 요청을 받아 비즈니스 로직 처리, 클라이언트에 결과 리턴
+톰캣 기능 : 클라이언트의 서블릿 요청 시 톰캣 컨테이너가 요청을 받고, HttpServletRequest, HttpServletResponse 객체를 만든 뒤 서블릿의 doGet()이나 doPost() 메서드를 호출하며 해당 객체를 전달
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+		System.out.println("call doGet");
+	}
+
+HttpServletRequest, HttpServletResponse는 편리한 기능을 제공
+
+자주 사용하는 메서드 :
+HttpServletRequest의 메서드 중 getSession()으로 현재 요청과 관련된 세션을 조회 가능, 세션이 비어있다면 새로 생성하여 반환, getCookies()로 클라이언트의 현재 요청에 대한 쿠키 객체 배열을 반환
+HttpServletResponse의 메서드 중 sendRedirect()으로 클라이언트에게 리다이렉트 응답을 보낸 뒤 특정 url로 다시 요청하게 한다.
+
+HttpServletRequest request
+String userId = request.getParameter("userId"); // 단일 값 리턴
+String[] subjects = request.getparameterValues("subject")  // 배열 리턴
+
+MIME TYPE
+- text/html : HTML 전송
+- text/plain : 일반 텍스트로 전송
+- application/xml : XML 데이터로 전송
+----------------------------------------------------------------------------------------------------------------------------------------
+
+HTTP 통신 
+- Get 방식 : url 주소에 데이터를 붙여서 전송하는 방식, 메서드 지정하지 않을 경우 기본값이 get 방식, 서블릿의 doGet으로 받는다.
+- Post 방식 : 전송하는 데이터를 숨겨서 전송하므로 보안성이 좋다. 서블릿의 doPost로 받는다. Get 방식보다 느리다.
+새로 고침은 Post 방식
+
+----------------------------------------------------------------------------------------------------------------------------------------

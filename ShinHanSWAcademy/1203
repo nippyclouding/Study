@@ -1,0 +1,293 @@
+1203 WEDS
+-----------------------------------------------------------------------------------------------------------------------------------------
+번수와 연산
+<script>
+    let a = 5;
+    let b = 4;
+    let c = a/b; 
+    console.log(c); //c=정수 1이 아닌 소수 1.25 
+
+    let a2 = '5';
+    console.log(a==a2); //true, 타입은 확인하지 않고 값만 비교
+    console.log(a===a2); //false, 타입과 값이 모두 같아야 true
+
+
+    if(a==a2 && console.log("실행")) console.log(true);
+    else console.log(false);
+    //console.log("실행")은 false이다. 
+    //조건문 속 console에 "실행"을 쓴 뒤 console.log(false)을 실행한다.
+
+    //기본 자료형
+    let a3 = a;
+    a3 = 6;
+    console.log(a); //5 출력
+
+    //참조 자료형
+    let a4 = [1, 2, 3];
+    let a5 = a4;
+    a5[0] = 4;
+    console.log(a4); // 4 2 3
+
+    let a6 = [4, 2, 3];
+    console.log(a4==a6); //주솟값을 비교하기 때문에 내부 배열이 같아도 false
+
+    //삼항 연산
+    let a7 = a == 5 ? "yes" : "no"; //조건 ? 참 :  거짓
+</script>
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+함수
+<script>
+    //함수 선언이 함수 사용보다 아래에 있을 때에도 함수 사용이 정상적으로 동작한다. (hoisting)
+    
+
+    //함수 선언 부분
+    function addNum (a, b){
+        let c = a + b;
+        console.log(c);
+        return c;
+    }
+
+    //실행
+    addNum(3, 2);
+    addNum("hell", "o");
+
+    //매개변수 기본값 지정 가능, 매개변수가 없다면 기본값 적용
+    function addNum (a=10, b=3){
+        let c = a + b;
+        console.log(c);
+    }
+
+    function printA(){
+        console.log("printA : AAAAA");
+    }
+
+    //printA() 호출로 실행이 가능
+    (function printA(){
+        console.log("printA : AAAAAA");
+    })();
+    //()로 함수를 묶고 끝에 ()를 써주면 함수 선언 후 바로 자동 실행
+
+
+
+    //익명 함수 (함수도 값이다)
+    let printB = function(){
+        console.log("printB : BBBBB");
+    };
+    printB(); //변수로 선언했지만 익명 함수로 사용
+
+    //printC는 변수, console.log() 함수를 부르는 변수이다. 따로 선언하지 않아도 자동으로 함수가 실행된다.
+    let printC = console.log("printC : CCCCC");
+
+    //화살표 함수(익명 함수의 다른 표현 식)
+    let printD = ()=>{
+        console.log("DDDDD");
+    }
+
+    let printE = a => console.log("EEEEE" + a);
+    printE("hello"); //사용 부분, EEEEEhello로 콘솔에 출력
+
+
+    //가변 인자
+    function multiple1(){
+        console.log(arguments);
+    }
+    multiple1(1,2,3,4,5,6);
+
+    
+
+    /*
+    //콜백 callback : 함수를 매개변수로 전달한다.
+    function calculator(func, x, y){
+        let result = func(x, y); //함수를 매개변수로 받아 또 다른 매개변수인 x, y를 func하여 리턴
+        return result;
+    }
+    console.log(calculator(add, 10, 20)); // 일반 함수를 콜백으로
+    console.log(calculator(function(x, y){// 익명 함수를 콜백으로
+        return x-y;
+    }, 20, 10));
+    console.log(calculator((x,y) => x * y, 10, 5)); // 화살표 함수를 콜백으로
+    */
+
+    //return : 값을 호출한 곳으로 돌려주는 역할, 함수의 실행을 중지하는 역할
+    
+    function printF(){
+        console.log(1);
+        return; //실행 중지
+        console.log(2); //출력되지 않는다.
+    }
+
+    printF();
+    
+
+    //내부 함수
+    function home(){
+        function hello(){
+            console.log("hello");
+        }
+        hello();
+    }
+    // hello(); //내부 함수이기 때문에 실행이 안된다.
+    home();
+
+    //closure() 
+    //독립적인 변수를 가지고 있는 함수
+    //내부 함수를 이용하기 때문에 별도의 스코프가 존재한다.
+    
+    function test(){
+        let text = "hello"; //지역 변수
+        console.log(text);
+    }
+
+    test(); // text 지역 변수는 함수 안에서만 사용, 외부에서 사용이 불가능하다. console.log(text) 불가
+
+    function test2(){
+        let text = "hello2";
+        //내부 함수로 지역 변수 text 리턴, 내부 함수는 별도의 스코프를 가지고 있다.
+        return function(){
+            return text;
+        }
+    }
+    let t2 = test2(); //t2에는 text가 들어가있는 것이 아니라 내부 함수가 들어가있다.
+    console.log(t2()); //t2 출력 시 text가 출력된다.
+
+
+
+    function test3(name){
+        let text = "hello3 " + name;
+        return function(){
+            return text;
+        }
+    }
+    let t3 = test3('kim');
+    let t4 = test3('lee');
+
+    console.log(t3);
+    console.log(t4);
+    
+
+</script>
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+Json : JavaScript Object Notation
+JS와 Json의 차이
+객체의 속성명 { "속성명" : 속성값 } // JS에서는 속성명에 ""를 쓰지 않지만 Json에서는 속성명에 ""를 쓴다.
+JS와 Json의 공통점 : {} : 객체, [] : 배열 
+-----------------------------------------------------------------------------------------------------------------------------------------
+<script>
+    let now = new Date();
+    document.writeln("현재 시간은 " + now);
+
+    document.write("현재 시간은 " + now.toLocaleDateString());
+
+
+    //객체 생성
+    let car = {
+        company : "companyH",
+        model : "newCar",
+        color : "gray",
+        displacement : 3000,
+        start : function(){
+            console.log("engine start");
+        },
+        move : function(){
+            console.log("move car");
+        }
+    }
+
+    console.log(typeof(car)); // object 타입
+    console.log(car); //typeof 없이 car만 넣어도 타입이 출력된다
+
+    console.log(car.model); //속성 사용, newCar 출력
+    console.log(car['company']); //객체[속성]으로도 접근 가능
+
+    car.price = 4000; //객체 생성 시에는 없던 속성
+    console.log(car); //price 속성이 추가되어서 속성들이 출력
+
+    car.start(); //객체 메서드 실행
+    
+
+    //생성자 함수
+    function Calculator(a, b){
+        var n1 = a;
+        var n2 = b;
+        this.n3 = a;
+        this.add = function(){
+            return n1 + n2;
+        }
+    }
+
+    //생성자 함수를 인스턴스 객체로 생성, 과거 클래스 개념이 존재하지 않았을 때 사용하던 방식, new + 함수로 생성한다.
+    let cal = new Calculator(2, 3); // 생성자 함수로 객체 생성 시 속성이 하나도 존재하지 않는다. calculator 함수의 var n1, n2는 속성이 아니다. cal.n1 => 출력되지 않는다.
+    
+
+    console.log(cal); // n3은 cal의 속성이 된다. this 사용
+    console.log(cal.n3); //a가 출력된다.
+
+    console.log(cal.add());
+
+    let cal2 = Calculator(4, 5);  //new를 사용하지 않으면 객체 생성이 아닌 메서드 생성
+    //console.log(cal2.n3); 사용 불가
+
+
+    //클래스
+    class Calculator2{
+        
+        //생성자, 초기화 
+        constructor(a, b){
+            this.n1 = a;
+            this.n2 = b;
+        }
+
+        //메서드
+        add(){
+            return this.n1 + this.n2;
+        }
+    }
+
+    //클래스로 객체 생성 시 new 사용
+    let c = new Calculator2(2, 3);
+    console.log(c.add());
+
+
+    //----------------------------------------------------------------------------------------------------
+
+    // 내장 객체 - Array 객체
+    let arr = [1, 2, 3, 4, 5];
+
+    //콜백 함수 사용 - forEach
+    arr.forEach(function(v, i){
+        console.log(`${i}번째 값 : ${v}`);
+    });
+
+    //for문 사용
+    for(let i = 0; i<arr.length; i++){
+        console.log(`${i}번째 값 : ${arr[i]}`);
+    }
+    
+    //문자열 관련
+    let str = "hello";
+    console.log(str.length);
+    console.log(str.replace('e', 'a')); //e를 a로 변경
+    console.log(str.indexOf('l')); //l의 위치 중 첫번째 인덱스 리턴
+    console.log(str.split('e'));
+    console.log(str.substring(2,3))//2번 인덱스부터 3번 인덱스 '전'까지
+    console.log(str[1]); 
+
+    let xmas = new Date(2025, 12, 25);
+    let diff = xmas.getTime() - now.getTime();
+    diff = Math.ceil(diff/ (1000 * 60 * 60 * 24));
+    console.log(diff);
+
+
+    //팝업창을 새로 띄운다. (근래에는 거의 사용하지 않는다)
+    window.open('operation.html', 'operation', 'width=300, height=300, left = 100, top = 100');
+
+    console.log(location.href);
+    //location.href = 'oper.html'; oper.html로 이동
+
+</script>
+
+<a href="oper.html" target="_blank">operation</a>
+-----------------------------------------------------------------------------------------------------------------------------------------

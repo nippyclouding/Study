@@ -1,0 +1,185 @@
+1103 MON
+
+
+윈도우 - Path에 추가 : %JAVA_HOME%bin : 어느 경로에서든지 자바 명령어를 실행할 수 있게 하기 위해서
+
+익명 객체 : 이름이 없는 객체
+자식 클래스, 구현 클래스를 생성하지 않고 일회성으로 객체를 생성하는 것을 익명 객체라고 한다.
+- 익명 상속 객체 (extends, 상속 관계)
+- 익명 구현 객체 (implements, 구현 관계)
+
+라이브러리 : 클래스를 모아둔 것 (자바 아카이브 = jar)
+해당 프로젝트에서 빌드 패스를 설정한다면 사용이 가능하다.
+
+모듈 : 패키지 관리 기능까지 포함된 라이브러리 (자바 9부터 지원)
+일반 라이브러리 : 내부 모든 패키지에 대해 외부에서 접근 가능
+모듈 : 일부 패키지를 은닉하여 접근할 수 없게 만들 수 있다.
+
+모듈 - 자신이 실행할 때 필요로 하는 의존 모듈을 모듈 기술자(module-info.java)에 기술(describe)할 수 있기 때문에 모듈 간 의존 관계를 쉽게 파악할 수 있다.
+
+모듈은 라이브러리이기 때문에 JAR 파일 형태로 배포 가능
+응용 프로그램 개발 시 원하는 기능의 모듈(JAR) 파일을 다운로드하여 이용이 가능
+대규모 응용 프로그램은 기능별로 모듈화하여 개발이 가능, 모듈별로 개발, 조립하는 방식을 사용하면 유지보수에 편리하다.
+
+리플렉션 : 컴파일 시점이 아닌 런타임(실행 시간)에 클래스나 객체의 정보(메서드, 변수 등)를 접근할 수 있게 하는 기술
+런타임에 메서드 리턴타입, 변수 등의 데이터를 외부에서 확인이 가능하다.
+
+
+예외 
+- 적재적소에 잘 사용하는 것이 아주 중요하다.
+
+현재는 입사 시 코딩테스트 비중이 높지만 향후에는 백엔드 과제 전형의 비중이 높아질 수도 있다.
+백엔드 과제에서 예외 처리에 대한 비중이 중요하다.
+
+에러 : 개발자가 수정할 수 없는 영역
+예외 : 개발자가 수정할 수 있는 영역
+
+예외 처리를 하는 이유 : 실행 중인 프로그램을 중지되지 않게 하기 위해서
+
+예외 : 체크 예외, 언체크 예외(런타임 예외)
+체크 예외 : 컴파일러가 검사하는 예외, 개발자는 해당 예외를 반드시 처리해야 한다.
+언체크 예외 : 컴파일러가 검사하지 않고 실행 중에서 (런타임에서) 발생하는 예외, 개발자는 해당 예외를 처리하지 않아도 된다. // main 메서드는 throws RuntimeException을 항상 하고 있기 때문에(생략되어 있음, void main(String[] args) throws RuntimeException)  
+
+체크예외 (Checked Exception)
+컴파일 시점에 처리를 강제하는 예외
+처리하지 않으면 컴파일 에러 발생
+하지만 실제 예외 발생은 런타임에 일어남
+
+언체크예외 (Unchecked Exception)
+컴파일 시점에 처리를 강제하지 않음
+런타임에 발생하는 예외
+컴파일은 성공하지만 실행 중 예외 발생 가능
+
+자바는 예외 발생 시 해당 예외에 맞는 예외 객체를 생성한다. (예외 처리 시에 사용하기 위함)
+
+try{ 
+  //예외 발생 가능 코드
+  } catch(예외 클래스 e){
+  //예외 처리
+  } finally {
+  //항상 실행
+  }
+
+public class EX20 {
+    public static void main(String[] args) {
+        System.out.println("시작");
+        int a = 10;
+        int b = 0;
+
+        try {
+            int c = a / b;
+        }catch (ArithmeticException e){
+            System.out.println(e.getMessage()); //예외의 첫 줄만 출력한다.
+            e.printStackTrace(System.out); //예외의 모든 줄을 출력한다.
+            System.out.println(e.toString()); //예외의 간략한 정보를 출력한다.
+        }
+        System.out.println("끝");
+    }
+}
+
+DB 연결 시 작업 순서
+app -> DB (특정 ip, 포트로 접속)
+DB -> app에 커넥션 전달
+app의 sql 전달 -> DB
+DB의 결과 전달 -> app
+app - DB 연결 종료(자원 반납, close)
+자원 반납은 반드시 해야하기 때문에 finally 구문에 ~.close()를 넣는다.
+
+웹 서버가 느려지는 원인 : 네트워크, 파일
+
+Member m = new Member();
+System.out.println(m); //m.toString()이 출력된다, 객체 주솟값 출력
+
+Member 클래스에 toString()을 오버라이딩한다면 System.out.println(m) 시 객체 주솟값이 아닌 필드 문자열이 출력된다.
+
+Class.forName ( ... ) : 클래스를 메모리에 로드시키는 메서드
+Class.forName("java.lang.String"); // ClassNotFoundException는 체크 예외이기 때문에 반드시 예외를 밖으로 던지거나 catch로 처리해야 한다.
+
+Class.forName("java.lang.String") : forName()은 ClassNotFoundException을 throws하기 때문에 해당 메서드를 사용하는 메서드에서 throws ClassNotFoundException을 해야한다.
+
+체크 예외 해결 방법
+- try - catch로 예외를 잡기
+- 예외 발생하는 메서드를 사용하는 메서드에서 예외를 밖으로 던지기 
+
+public static void test() throws InterruptedException{ ... } //인터럽트 예외는 체크 예외, 반드시 처리해야 한다.
+
+throw : 예외를 직접 발생시킬 수 있다.
+if(true) throw new Exception ("error");
+
+사용자 정의 예외 
+아래의 InsufficientException은 사용자 정의 예외이다.
+public static class InsufficientException extends Exception{
+        public InsufficientException() {
+        }
+
+        public InsufficientException(String message) {
+            super(message);
+        }
+    }
+
+
+public class EX21 {
+
+    public static void main(String[] args) {
+        Account ac = new Account();
+        ac.deposit(10000);
+        System.out.println("예금액 : " + ac.balance);
+
+        try{
+            ac.withdraw(30000);
+        }catch (InsufficientException e){
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public static class Account{
+        private long balance;
+
+        public Account() {}
+
+        public void deposit(int money){
+            balance+=money;
+        }
+        public void withdraw(int money) throws InsufficientException{
+            if(balance<money) throw new InsufficientException("잔고 부족");
+            balance -=money;
+        }
+    }
+
+    public static class InsufficientException extends Exception{
+        public InsufficientException() {
+        }
+
+        public InsufficientException(String message) {
+            super(message);
+        }
+    }
+}
+
+
+java.base 모듈 : 모든 모듈이 의존하는 기본 모듈
+내부에 java.lang, java.util, java.text, java.time, java.io, java.net, java.nio 등 여러 중요 패키지들이 들어있다.
+
+Object 클래스 
+- 모든 클래스들의 최상위 클래스
+- boolean equals(Object obj) : 객체 번지를 비교하여 결과 리턴
+- int hashCode() : 객체 해시코드를 리턴
+- String toString() : 객체 문자 정보를 리턴
+
+객체 해시 코드 : 객체를 식별하는 정수
+해시값은 암호화에서 자주 사용된다. 정방향 암호화는 쉽지만 역방향으로 해독은 어렵기 때문
+
+
+@Data
+class Member{
+ Student s;
+}
+
+@Data
+class Student{
+  Member m;
+}
+
+=> toString() 시 무한 참조 발생 - 스택 오버플로우 발생 가능
+ 

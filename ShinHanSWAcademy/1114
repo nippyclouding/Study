@@ -1,0 +1,49 @@
+1114 FRI
+
+group by는 alias 이전에 먼저 실행되기 때문에 group by에 alias를 사용할 수 없다.
+--------------------------------------------------------------------------------------------------------------
+<페이징 처리>
+(오라클)
+- 목록 페이지에서 해당 페이지의 목록을 조회하는 기능
+ex : 공지사항이 1000건 있을 때 10건만 가져오는 것이 아니라 정렬을 한 뒤 가장 앞에서부터 10개씩 가져온다.
+
+일반적으로 페이징 처리는 자바 프로그래밍으로 하지만 DB에서 페이징 출력하는 방법은 아래 방식을 사용한다.
+offset 이용 (오라클 12 이상), rownum 이용
+=> 실무에서는 주로 rownum을 이용한다.
+
+-- rownum : 페이징 처리에 사용, 순서를 붙인다.
+select empno, ename, rownum
+from emp
+order by hiredate desc;
+-- 정렬을 하는 순간 rownum 데이터가 섞인다
+-- 서브쿼리로 감싸서 바깥에서 실행
+
+select a.empno, a.ename, rownum
+from (select empno, ename from emp order by hiredate desc) a;
+
+-- 먼저 hiredate로 정렬을 한 뒤 rownum으로 페이징 처리를 하면 된다.
+-- 실무에서 사용은 아래와 같다. 서브 쿼리를 두 번 감싸서 페이징 처리
+select *
+from
+    (
+    select a.empno, a.ename, rownum rn
+    from 
+    (select empno, ename from emp order by hiredate desc) a
+) b
+where b.rn between 1 and 10; -- 페이징 처리 부분
+-- 첫번째 서브쿼리 a : hiredate로 desc 정렬 
+-- 두번째 서브쿼리 b : rownum으로 페이징 (번호 매김)
+-- 메인 쿼리 : 페이징된 부분에서 가져올 페이지를 where문으로 처리
+
+-- 1페이지 : between 1 and 10
+-- 2페이지 : between 11 and 20
+-- 3페이지 : between 21 and 30 .. 
+
+-- 시작값 : (페이지 번호 -1) * 페이지 당 개수 + 1
+-- 끝값 : 페이지 당 개수 * 페이지 번호 (ex : 3페이지 - 30)
+
+
+erd : 엔티티 관계 다이어그램 
+
+
+--------------------------------------------------------------------------------------------------------------

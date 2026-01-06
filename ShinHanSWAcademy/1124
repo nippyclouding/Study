@@ -1,0 +1,67 @@
+1124 MON
+-----------------------------------------------------------------------------
+
+
+깃허브 - 깃 연동 (로컬에서 깃이 커밋되어있다고 가정)
+
+git remote add origin https://github.com/nippyclouding/test.git
+git branch -M main
+git push -u origin main
+
+=> git push -u origin main은 main 브랜치의 내용을 origin이라는 원격저장소 alias 지정, push
+-u는 upstream 설정 (origin의 main과 연결)
+이후부터는 git push만 입력해도 자동으로 origin main으로 push됨
+
+## git 명령어
+
+git clone : 원격저장소의 모든 내용을 로컬 저장소로 복사
+git clone https://github.com/nippyclouding/test.git
+
+git remote : 로컬 저장소를 특정 원격 저장소와 연결
+git remote add 저장소별칭(origin) https://github.com/nippyclouding/test.git
+git remote -v (저장소 연결 확인)
+
+git push : 로컬저장소의 변경사항을 원격 저장소로 보냄
+git push 원격저장소명(origin) 로컬브랜치명(master, main)
+git push origin --all (--all은 모든 브랜치)
+git push만 입력 : 이미 로컬 - 원격으로 연동되어있을 때 바로 push
+
+
+<fetch, pull>
+git fetch : 로컬저장소와 원격저장소의 변경 사항이 다른 경우 비교해서 git merge로 문제 해결
+git pull : push와 반대, 원격저장소의 내용을 로컬 저장소로 가져와서 병합, 실제 협업하는 중 다른 개발자가 원격저장소에 먼저 수정하는 경우 push가 불가능하므로, 로컬과 원격저장소를 맞추는 작업
+
+fetch : 원격저장소의 커밋을 가져와서 로컬에서 확인 후 수동으로 병합 (자동으로 병합되지 않는다.)
+pull : 원격저장소의 커밋을 가져옴과 동시에 병합까지 자동 (fetch까지 포함됨)
+
+- `fetch`: 원격 저장소의 최신 커밋을 로컬로 가져오기만 함
+- `pull`: 원격 저장소의 최신 커밋을 로컬로 가져와 `merge` 또는 `rebase`
+
+<다른 사람이 먼저 push를 한 뒤 내가 push를 한다면>
+
+충돌 없는 경우:
+git pull → 자동 병합 완료 (merge commit 자동 생성)
+바로 git push 가능
+충돌이 없다면 pull 후 추가 commit 없이 바로 push
+
+충돌 있는 경우:
+git pull → 충돌 발생
+충돌 수동으로 해결 → git add . git commit (병합 완료)
+git push
+충돌이 있다면 pull 후 해결 → commit → push
+
+충돌 발생 시 rejected, failed to push some refs to ~ 오류  // git pull before pushing again 문구가 출력
+=> git pull origin main : 원격 저장소의 커밋을 가져온 뒤 병합까지 한다.(병합 시 오류가 나는 경우 해결 필요) 이후 로컬에서 commit, push
+rejected 발생 시 로컬의 이력을 새로 추가 후 pull 하거나, fetch 후 merge
+
+pull = fetch + merge
+git pull = git fetch + git merge (자동 병합)
+또는 git pull --rebase = git fetch + git rebase
+
+
+<이클립스 깃 연동> 
+https://codro.notion.site/06-Eclipse-Git-6211724601e347a8ab18e9313d3965af
+
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------

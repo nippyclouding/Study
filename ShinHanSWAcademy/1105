@@ -1,0 +1,101 @@
+1105 WEDN
+
+문자열
+immutable : 불변성, + 연산 시 새로운 객체(new)
+문자열 수정 시 StringBuffer, StringBuilder을 사용
+
+레거시 프로젝트에는 Date, Calendar 등 과거의 명령어가 많다.
+
+날짜 : Date, Calendar, LocalDate, LocalDateTime, Timestamp
+포매팅 : DecimalFormat, SimpleDateFormat
+정규식 : 정해진 규칙에 해당하는 문자열 검색, 삭제, 치환 ..
+리플렉션 : 런타임에 클래스 메타 정보를 확인, 수정 
+
+멀티스레드
+public class EX30 {
+    public static void main(String[] args) throws InterruptedException {
+        Runnable task = new Task();
+        Thread thread = new Thread(task);
+
+        for(int i=0; i<5; i++){
+            Long start = System.currentTimeMillis();
+            Thread.sleep(500);
+            task.run();
+        }
+    }
+
+    static class Task implements Runnable {
+        @Override
+        public void run() {
+            System.out.println("working..");
+        }
+    }
+}
+
+public class EX31 {
+    public static void main(String[] args) {
+        SumThread sumThread = new SumThread();
+        sumThread.start();
+        try{
+            sumThread.join();
+        }catch (InterruptedException e){
+        }
+        System.out.println("1~100 의 합 : " + sumThread.sum);
+    }
+    
+    static class SumThread extends Thread{
+        long sum;
+        @Override
+        public void run() {
+            for(int i=0; i<=100; i++){
+                sum+= i;
+            }
+        }
+    }
+}
+
+
+람다식 조건 : 인터페이스의 추상 메서드가 하나만 있어야 한다.
+
+Asynchronized Javascript And XML : AJAX, 비동기 통신
+요청을 보낸 뒤 응답을 기다리지 않고 다른 작업을 계속 수행하는 통신 방식
+
+동기 통신
+console.log("1번 작업");
+let result = fetch_data();  // 여기서 멈추고 응답 올 때까지 대기
+console.log("2번 작업");    // 위가 끝나야 실행
+
+비동기 통신
+console.log("1번 작업");
+fetch_data_async();         // 요청만 보내고 바로 다음 작업 수행
+console.log("2번 작업");    // 즉시 실행
+
+----------------------------------------------------------------------------------------------------------------
+
+컬렉션 프레임워크
+자료구조 data Structure 
+
+List : get, size, add, remove, contains, isEmpty
+Set의 메서드
+add(값) : 셋에 값을 넣는다.
+contains(값) : 셋에 값이 포함되어있는지 확인
+isEmpty() : 비어있는지 확인
+size() : 크기 리턴
+remove(값) : 값을 셋에서 삭제
+Iterator : Set은 List와 다르게 get이 없다, 조회 시 Iterator 사용 or forEach문
+
+Set<Integer> set = new HashSet<>();
+Iterator<Integer> iter = set.iterator();
+while(iter.hasNext()) System.out.println(iter.next());
+
+자바의 맵은 자바스크립트의 객체, 파이썬의 딕셔너리이다.
+
+Map 메서드
+put(key, value) : 키 값 쌍을 맵에 넣는다. 
+containsKey(key) : 키가 맵에 있는지 확인 (boolean)
+containsValue(value) : 값이 맵에 있는지 확인 (boolean)
+get(key) : key에 매핑되는 value 리턴
+keySet() : 맵의 key들을 Set으로 리턴
+map.getOrDefault(조회값, 기본값) : get 시 값이 있다면 그 값을 리턴, 값이 없다면 기본값 리턴
+
+----------------------------------------------------------------------------------------------------------------

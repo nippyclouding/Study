@@ -1,0 +1,67 @@
+1220_TUE
+
+MyBatis
+
+Repository에서 sql 실행 시 : namespace.id
+
+리포지토리에서 SqlSessionTemplate이 사용 가능한 메서드 :
+selectList(), 여러 개 일때 (list)
+selectOne(), 하나일 때
+insert(), update(), delete() 
+
+사용 시
+.메서드명 (namespace.id, 파라미터)
+오버로딩 메서드 - '파라미터' 가 생략될 수도 있다.
+
+@Repository
+public class StudentDAO {
+
+    @Autowired
+    private SqlSessionTemplate sst;
+
+    public List<StudentVO> all() {
+        // namespace.id : student.all, DB에서 리스트로 전체 조회
+        return sst.selectList("student.all"); 
+    }
+}
+
+파라미터 매핑
+#{변수명} : PreparedStatement (?로 들어간다.)
+${변수명} : Statement (String으로 들어간다.)
+
+<select id="view" resultType="mvc1.StudentVO" parameterType="int">
+    SELECT * from student where studentNo = #{studentNo}
+</select>
+
+MyBatis 최대 장점 : 동적 SQL 작성에 편리
+
+<form>
+    <select name = "searchType">
+        <option value="all">이름 + 아이디</option>
+        <option value="name">이름</option>
+        <option value="id">아이디</option>
+    </select>
+    <input type="text" name = "searchWord" value = "">
+    <input type="submit" value ="검색">
+</form>
+
+?searchType=all&searchWord = 김 
+where name like '%김' or id like '%김%'
+
+?searchType=id&searchWord = 김
+where id like '%김%'
+
+?searchType=id&searchWord = 김
+where name like '%김%'
+
+동적으로 쿼리가 변경되어야 한다. 
+if문으로 처리하기 어렵다.
+=> 동적 쿼리
+
+목록 페이지 (페이징 처리)
+- 총 개수를 알아야 한다.
+- 총 페이지 수 = 총 개수 / 페이지당 개수
+
+총 2개의 sql 실행
+1. 총 개수 조회 (검색 조건을 고려한 총 개수)
+2. 해당 페이지 목록 조회 (검색 조건을 고려한 총 개수)

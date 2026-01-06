@@ -1,0 +1,135 @@
+1106 THU
+
+스레드 : 독립적으로 실행되는 하나의 단위
+메인 스레드에서 파생된다.
+병렬 작업, 다수의 클라이언트가 접속하는 서버, 안드로이드 네트워크 ..
+
+HashMap은 순서를 보장하지 않지만
+LinkedHashMap은 순서를 보장한다.
+
+B-, B+ 트리, AVL 트리 : 데이터베이스가 데이터를 저장하는 방법
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+정렬 정리
+
+정렬 구현 시간 복잡도를 고려해야 한다면 merge sort를 사용하기 (최악까지 모두 nlogn, 퀵 소트는 최악이 n제곱)
+
+import java.util.*;
+
+public class EX37 {
+    static final int SIZE = 10000000;
+    public static void main(String[] args) {
+        /*
+        * 배열 정렬 : Arrays.sort(); 평균 nlogn, 최악 n제곱
+        * Arrays.sort(arr) : 오름차순 정렬
+        * Arrays.sort(arr)에서 arr이 int[] 등 기본형 배열이라면 내림차순을 지원하지 않는다.
+        * Arrays.sort(arr, Comparator.reverseOrder()) : 내림차순 정렬, arr이 객체 배열일 때만 가능(Integer[]) // Arrays.sort()의 파라미터로 기본자료형일 때는 Comparator가 올 수 없다.
+        *
+        * 컬렉션 정렬 : Collections.sort(); 평균과 최악 모두 nlogn
+        * Collections.sort(list) : 오름차순 정렬
+        * Collections.sort(list, Comparator.reverseOrder()) : 내림차순 정렬, list 등 컬렉션 자료구조는 모두 객체형 자료만 담을 수 있다 (List<Integer>)
+        *
+        * 객체 정렬 : Comparable 인터페이스를 구현하여 가능
+        * 또는 Comparator 인터페이스를 익명 구현 객체로 구현하거나 람다식으로 구현할 수 있다. (직접 정렬 로직을 구현한다)
+        */
+
+
+        List<Integer> list = new ArrayList<>();
+        for(int i = 0; i<SIZE; i++) list.add(new Random().nextInt());
+        sortColl(list);
+
+        Integer[] arr = new Integer[SIZE];
+        for(int i=0; i<arr.length; i++) arr[i] = new Random().nextInt();
+        sortArr(arr);
+
+        //객체 정렬
+        List<Map<String, Object>> lst = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", "user1");
+        map.put("age", 10);
+        lst.add(map);
+
+        map = new HashMap<>();
+        map.put("name", "user2");
+        map.put("age", 40);
+        lst.add(map);
+
+        Collections.sort(lst, new Comparator<Map<String, Object>>() {
+                    @Override
+                    public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                        //return (int) o1.get("age") - (int) o2.get("age"); // 오름차순
+                        return (int) o2.get("age") - (int) o1.get("age"); // 내림차순
+                    }
+                }
+        );
+
+    }
+
+    private static void sortColl(List<Integer> list) {
+        Long start = System.currentTimeMillis();
+        list.sort(Comparator.naturalOrder());
+        Long end = System.currentTimeMillis();
+        System.out.println("Collection sort ASC time : " + (end - start) + "ms");
+        Long start2 = System.currentTimeMillis();
+        list.sort(Comparator.reverseOrder());
+        Long end2 = System.currentTimeMillis();
+        System.out.println("Collection sort DESC time : " + (end2 - start2) + "ms");
+    }
+
+    private static void sortArr(Integer[] arr) {
+        Long start = System.currentTimeMillis();
+        Arrays.sort(arr);
+        Long end = System.currentTimeMillis();
+        System.out.println("Array sort time ASC : " + (end - start) + "ms");
+
+
+        Long start2 = System.currentTimeMillis();
+        Arrays.sort(arr, Comparator.reverseOrder());
+        Long end2 = System.currentTimeMillis();
+        System.out.println("Array sort time DESC : " + (end2 - start2) + "ms");
+    }
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+public class EX38 {
+    public static void main(String[] args) {
+        int[][] array = {
+                {1, 99}, {2, 98}, {3, 97}, {4, 96}
+        };
+
+        //문제 : 이차원 배열 속 배열의 두 번째 값을 기준으로 오름차순 하기
+
+        //풀어주신 답안 (array는 기본 자료형이 아니라 배열이다)
+        Arrays.sort(array, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[1] - o2[1];
+            }
+        });
+        for(int i[]: array)
+            System.out.println(Arrays.toString(i) + " ");
+
+        //내가 제출한 답안
+        List<int[]> list = new ArrayList<>();
+        for(int[] i : array) list.add(i);
+        Collections.sort(list, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[1] - o2[1];
+            }
+        });
+        for(int i[]: list)
+            System.out.println(i[0]+" ");
+
+        // 람다 1 : 모두 명시
+        Collections.sort(list, (int[] o1, int[] o2) ->{
+                return o1[1] - o2[1];
+            }
+        );
+
+        // 람다 2 : 타입 추론, return 생략, {} 생략
+        Collections.sort(list, (o1, o2) ->o1[1] - o2[1]);
+        
+    }
+}
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

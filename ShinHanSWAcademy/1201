@@ -1,0 +1,145 @@
+1201 MON
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+CSS는 레이아웃만 잘 설정하면 된다.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<style>
+    *{
+        box-sizing: border-box;
+    }
+    .wrap{
+        width: 1000px;
+        margin: 0 auto;
+    }
+    .header{
+        padding : 40px 0px;
+        text-align: center;
+        background-color: gray;
+        border:1px solid black;
+    }
+    .menu{
+        height: 40px;
+    }
+    
+    .menu > ul{
+        margin: 0;
+        padding: 0;
+    }
+    .menu > ul > li{
+        list-style-type: none;
+        background-color: gray;
+        border:1px solid black;
+        width: 25%; /*1000px의 25%인 250px*/
+        height: 40px;
+        text-align: center;
+        line-height: 40px; /*line height를 height와 동일하게 하면 list들이 수평으로 정렬된다.*/
+        float: left; /*요소를 왼쪽으로 띄우고 주변 요소가 그 오른쪽에 흐르게 만드는 역할*/
+    }
+
+    
+    .submenu{
+        width:30%;
+        padding : 100px 0px;
+        text-align: center;
+        background-color: gray;
+        border:1px solid black;
+        float: left;/*요소를 왼쪽으로 띄우고 주변 요소가 그 오른쪽에 흐르게 만드는 역할*/
+    }
+
+    .content{
+        width:70%;
+        padding : 100px 0px;
+        text-align: center;
+        background-color: gray;
+        border:1px solid black;
+        float: left;/*요소를 왼쪽으로 띄우고 주변 요소가 그 오른쪽에 흐르게 만드는 역할*/
+    }
+    .footer{
+        clear: both; /*content와 submenu의 float: left 부분때문에 footer 영역이 위로 올라간 것을 해결*/
+        padding : 30px 0px;
+        text-align: center;
+        background-color: gray;
+        border:1px solid black;
+    }
+
+    .menu > ul > li:hover{ /*가상 선택자*/
+        background-color: white;
+        cursor: pointer; /*마우스를 올리면 포인터로 바뀐다*/
+    }
+
+
+</style>
+<title>Document</title>
+</head>
+<body>
+
+    <div class="wrap">
+        <div class="header">
+            Header
+        </div>
+
+        <div class="menu">
+            <ul>
+                <li>menu 1</li>
+                <li>menu 2</li>
+                <li>menu 3</li>
+                <li>menu 4</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <div class="submenu">SUBMENU</div>
+            <div class="content">CONTENT</div>
+        </div>
+
+        <div class="footer">
+            Footer
+        </div>
+
+    </div>
+</body>
+</html>
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+<반응형>
+
+다양한 화면의 크기에 맞게 기존 디자인 크기를 변경
+viewport : 다른 기기 화면에서 실제 내용이 표시되는 영역
+
+<meta name="viewport" content="속성1=값1, 속성2=값2 ..">
+<meta name="viewport content="width=device-width, initial-scale=1">
+
+반응형 요소 - em, rem 단위
+px 단위를 사용하면 글자 크기가 고정된다.
+반응형을 이용하기 위해서는 고정형인 px 대신 em, rem으로 상대 글자 크기를 사용한다.
+em : 부모 요소 글꼴을 1em으로 두고 상대 값을 계산 (ex : body 태그의 기본 글자는 16px, body가 부모 요소라면 16px을 기준으로 em 계산)
+rem : 부모 요소의 글자 크기때문에 예상치 못한 결과가 나오는 것을 방지, root에서 지정한 크기를 기준값으로 사용, root = <html>을 기준
+
+이미지
+.top{
+  max-width: 100%;
+  height = auto;
+}
+max-width 지정 시 화면이 매우 커지더라도 최대 100%까지만 커지고 더이상 커지지 않는다.
+
+미디어 쿼리 : 접속 기기에 따라 서로 다른 CSS를 적용하기 위해 사용
+<style>
+    /*PC : 1025px부터 배경색이 검정색으로 설정*/
+    body{
+       background-color: black;
+   }
+
+    /* 태블릿 : 최대 1024px까지 배경색이 회색으로 설정*/
+    @media screen and (max-width:1024px){
+        body{
+            background-color: gray;
+        }
+    }
+</style>
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
