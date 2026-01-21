@@ -1,8 +1,10 @@
-package book.shop.domain;
+package book.shop.domain.item;
 
+import book.shop.domain.BaseEntity;
+import book.shop.domain.CategoryItem;
+import book.shop.domain.OrderItem;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import java.util.List;
 @Getter
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
-public abstract class Item {
+public abstract class Item extends BaseEntity {
     @Id @GeneratedValue
     @Column(name = "item_id")
     private Long id;
@@ -21,11 +23,9 @@ public abstract class Item {
 
     private Long price;
 
-    private Long stockQuantity;
+    private String imgUrl;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+    private int stockQuantity;
 
     @OneToMany(mappedBy = "item") // 기본값 = lazy load
     private List<OrderItem> orderItems = new ArrayList<>();
