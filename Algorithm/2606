@@ -1,0 +1,62 @@
+import java.util.*;
+import java.io.*;
+
+class Main {
+    static int cnt;
+    static int connect;
+    static Node[] nodes;
+
+    static class Node {
+        int num;
+        boolean visited;
+        List<Node> next = new ArrayList<>();
+        Node(int num) {
+            this.num = num;
+            this.visited = false;
+        }
+    }
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        cnt = Integer.parseInt(br.readLine());
+        connect = Integer.parseInt(br.readLine());
+
+        nodes = new Node[cnt + 1]; // 0 ~ 7번까지
+
+        for (int i = 1; i <= cnt; i++) {
+            nodes[i] = new Node(i);
+        }
+
+        for (int i = 0; i < connect; i++) {
+            String[] input = br.readLine().split(" ");
+            int num1 = Integer.parseInt(input[0]);
+            int num2 = Integer.parseInt(input[1]);
+
+            // 연관관계 세팅
+            nodes[num1].next.add(nodes[num2]);
+            nodes[num2].next.add(nodes[num1]);
+        }
+
+        int result = 0;
+
+        result = recursive(nodes[1], result);
+
+        System.out.println(result);
+    }
+
+    // 재귀 식 정의 (리턴 타입, 파라미터)
+    private static int recursive(Node node, int result) {
+
+        node.visited = true;
+        List<Node> next = node.next;
+
+        // 구현
+        for (int i = 0; i < next.size(); i++) {
+            Node nextNode = next.get(i);
+            // base condition
+            if (!nextNode.visited) result = recursive(nextNode,  result + 1);
+        }
+        
+        return result;
+    }
+}
