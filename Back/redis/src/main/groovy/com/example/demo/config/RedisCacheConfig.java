@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.config;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -9,6 +9,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.*;
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
+import java.util.List;
 import java.time.Duration;
 
 @Configuration
@@ -25,9 +27,11 @@ public class RedisCacheConfig {
                 // Redis에 Value를 저장할 때 Json으로 직렬화(변환)해서 저장
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(
-                                        new JacksonJsonRedisSerializer<>(
-                                                objectMapper,
-                                                BoardCacheDto.class)
+                                new JacksonJsonRedisSerializer<>(
+                                        objectMapper,
+
+                                        objectMapper.getTypeFactory().constructCollectionType(List.class,
+                                                BoardCacheDto.class)) // List<BoardCacheDto> 타입으로 value를 저장
                         )
                 )
                 // 데이터의 만료기간(TTL) 설정

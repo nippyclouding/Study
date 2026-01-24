@@ -18,7 +18,7 @@ public class BoardService {
 
     @Cacheable(
             cacheNames = "getBoards",
-            key = "'boards:page:' + #page + ':size:' + #size",
+            key = "'boards:page:' + #p0 + ':size:' + #p1",
             cacheManager = "boardCacheManager"
     ) // Cache Aside 전략으로 캐싱이 적용
     @Transactional(readOnly = true)
