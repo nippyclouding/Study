@@ -27,4 +27,7 @@ switch (animal) {
     case "cat" :
         console.log("this is cat");
         break;
+    default :
+        console.log("cannot find anything");
+        //break;가 필요없다.
 }
