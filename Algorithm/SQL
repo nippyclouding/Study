@@ -35,6 +35,13 @@ case
   else ...
   end as 컬럼명
 
+CASE
+  WHEN DATEDIFF(END_DATE, START_DATE) + 1 < 30
+  THEN "단기 대여"
+  WHEN DATEDIFF(END_DATE, START_DATE) + 1 >= 30
+  THEN "장기 대여"
+  END AS RENT_TYPE
+
 3. DATEDIFF 함수
 DateDiff(날짜1, 날짜2) : 날짜의 차이를 세아린다.
 * 시작일은 포함하지 않고 종료일만 포함한다.
