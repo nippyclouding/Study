@@ -2,8 +2,6 @@ package book.shop.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,13 +29,9 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-
-
     // 연관관계 편의 메서드
     public void setMember(Member member) {
         this.member = member;
         member.getOrders().add(this);
     }
-
-
 }
