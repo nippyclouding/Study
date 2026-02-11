@@ -20,16 +20,18 @@ public class InternalCallV1Test {
     void printProxy(){
         log.info("callService class={}", callService.getClass());
     }
-
-    @Test
-    void externalCall(){
-        callService.external();
-    }
+    // callService class=class hello.springtx.apply.InternalCallV1Test$CallService$$SpringCGLIB$$0
+    // $$SpringCGLIB$$0 : 프록시 객체
 
     @Test
     void internalCall(){
         callService.internal();
-    }
+    } // tx active=true
+
+    @Test
+    void externalCall(){
+        callService.external();
+    } // tx active=true
 
     @TestConfiguration
     static class InternalCallV1Config{
@@ -44,7 +46,7 @@ public class InternalCallV1Test {
         void external(){
             log.info("call external");
             printTxInfo();
-            internal();
+            internal(); // 트랜잭션이 동작하기 위해서는 프록시를 통해 접근해야 한다. 현재는 this.internal() => 트랜잭션 X
         }
 
         @Transactional
@@ -54,7 +56,7 @@ public class InternalCallV1Test {
         }
 
         void printTxInfo(){
-            boolean txActive = TransactionSynchronizationManager.isActualTransactionActive();
+            boolean txActive = TransactionSynchronizationManager.isActualTransactionActive(); // 현재 스레드에 트랜잭션이 적용되었는지 여부
             log.info("tx active={}", txActive);
         }
     }

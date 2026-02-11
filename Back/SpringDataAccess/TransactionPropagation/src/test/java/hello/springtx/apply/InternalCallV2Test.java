@@ -42,7 +42,8 @@ public class InternalCallV2Test {
         void external(){
             log.info("call external");
             printTxInfo();
-            internalService.internal();
+            //internal(); //this.internal(), CallService 프록시를 통하지 않고 직접 실행 => 트랜잭션 적용 x
+            internalService.internal(); // internalService 프록시를 통해 트랜잭션 실행 => 트랜잭션 적용 o
         }
 
         @Transactional
@@ -60,7 +61,6 @@ public class InternalCallV2Test {
     @Slf4j
     static class InternalService{
 
-
         @Transactional
         void internal(){
             log.info("call internal");
@@ -71,6 +71,5 @@ public class InternalCallV2Test {
             boolean txActive = TransactionSynchronizationManager.isActualTransactionActive();
             log.info("tx active={}", txActive);
         }
-
     }
 }
