@@ -12,6 +12,7 @@ public class OrderRepositoryV0 {
             throw new IllegalStateException("예외 발생");
         }
 
+        // 예외 없을 경우 sleep만 실행
         sleep(1000);
     }
 
