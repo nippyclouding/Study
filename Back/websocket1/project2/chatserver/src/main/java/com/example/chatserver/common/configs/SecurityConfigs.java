@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -37,7 +39,7 @@ public class SecurityConfigs {
                         .authenticated())
                 // 세션 방식 사용하지 x
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // 필터가 적용되는 요청에 대해서는 token 검증
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // 요청의 token 검증, jwtAuthFilter로 진입
                 .build();
     }
 
@@ -52,5 +54,11 @@ public class SecurityConfigs {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // 모든 url 패턴에 대해 cors 허용 설정
         return source;
+    }
+
+    @Bean // 회원가입 시 비밀번호 암호화, 로그인 시 암호화된 비밀번호와 입력값이 일치하는지 확인
+    public PasswordEncoder makePassword(){
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        // createDelegatingPasswordEncoder() : 기본값으로 BCrypt 적용
     }
 }
