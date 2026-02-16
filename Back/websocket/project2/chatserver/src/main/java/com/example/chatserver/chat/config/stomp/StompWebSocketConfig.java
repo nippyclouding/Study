@@ -24,6 +24,6 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     /*
     /publish 로 시작하는 url 패턴으로 메시지 발행 시 @Controller 객체의 @MessageMapping 메서드로 라우팅
-
+    클라이언트는 /topic/구독할 roomId 만 수신하면 메시지를 받을 수 있다.
      */
 }
