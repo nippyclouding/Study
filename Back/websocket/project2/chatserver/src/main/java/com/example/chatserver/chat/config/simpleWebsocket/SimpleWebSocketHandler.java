@@ -10,7 +10,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+//@Component Stomp를 위해 주석 처리
 @Slf4j
 public class SimpleWebSocketHandler extends TextWebSocketHandler {
     // 웹소켓 연결 요청이 /connect로 들어왔을 때 요청을 처리할 객체

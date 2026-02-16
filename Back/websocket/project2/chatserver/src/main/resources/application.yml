@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/chatserver?useSSL=false
+    url: jdbc:mysql://localhost:3306/chatserver?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
-    password: 1234
+    password: 11111111
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -13,8 +13,6 @@ spring:
     show-sql: true
 
 jwt:
-  #?? ???? ??? jwt ???? ??? ?? ?
-  #chatserversecretaccesstokenchatserversecretaccesstokenchatserversecretaccesstoken
-  #? ??? Base64 encode -> ??? ????
+
   secretKey: Y2hhdHNlcnZlcnNlY3JldGFjY2Vzc3Rva2VuY2hhdHNlcnZlcnNlY3JldGFjY2Vzc3Rva2VuY2hhdHNlcnZlcnNlY3JldGFjY2Vzc3Rva2Vu
   expiration: 3000 #3000? ?? ?? ??

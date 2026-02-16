@@ -16,8 +16,4 @@ public class StompController {
         log.info("{}", message);
         return message;
     }
-    /*
-    @SendTo : 클라이언트가 메시지 발행 -> 브로커가 roomId에 맞게 메시지 전달
-    => roomId를 구독하는 클라이언트에게 메시지 전달
-     */
 }

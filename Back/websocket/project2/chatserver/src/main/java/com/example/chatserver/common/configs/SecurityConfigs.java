@@ -35,7 +35,7 @@ public class SecurityConfigs {
                                 // filter 적용하지 않을 api
                         "/member/create"
                                 , "/member/doLogin"
-                                , "/connect")
+                                , "/connect/**")
 
                         .permitAll()
                         .anyRequest()
