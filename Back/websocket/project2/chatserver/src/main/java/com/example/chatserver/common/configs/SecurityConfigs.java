@@ -32,8 +32,11 @@ public class SecurityConfigs {
                 .httpBasic(AbstractHttpConfigurer::disable) // http basic(보안 인증 방법) 비활성화 (토큰 기반 인증 처리를 하기 때문)
                 // 특정 url 패턴에 대해서는 Authentication 객체를 요구하지 않는다.
                 .authorizeHttpRequests(a -> a.requestMatchers(
+                                // filter 적용하지 않을 api
                         "/member/create"
-                                , "/member/doLogin") // filter 적용하지 않을 api
+                                , "/member/doLogin"
+                                , "/connect")
+
                         .permitAll()
                         .anyRequest()
                         .authenticated())
