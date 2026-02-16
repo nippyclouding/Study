@@ -1,4 +1,4 @@
-package com.example.chatserver.chat.config;
+package com.example.chatserver.chat.config.simpleWebsocket;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
