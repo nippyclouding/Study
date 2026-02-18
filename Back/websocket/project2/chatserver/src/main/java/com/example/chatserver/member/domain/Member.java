@@ -1,5 +1,6 @@
 package com.example.chatserver.member.domain;
 
+import com.example.chatserver.common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseTimeEntity {
     @Id @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
 
@@ -25,7 +26,4 @@ public class Member {
     @Enumerated(EnumType.STRING) // DB에 ENUM 타입으로 들어간다.
     @Builder.Default // Builder 패턴 - USER 기본값 적용
     private Role role = Role.USER; // 기본값 : USER
-
-
-
 }
