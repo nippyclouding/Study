@@ -1,6 +1,7 @@
 package com.example.chatserver.chat.controller;
 
 import com.example.chatserver.chat.dto.ChatMessageReqDto;
+import com.example.chatserver.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -24,11 +25,17 @@ public class StompController {
 //    }
 
     private final SimpMessageSendingOperations messageTemplate;
+    private final ChatService chatService;
 
     // 2. messageMapping만 활용 (sendTo 사용 x) : 유연성 증가
     @MessageMapping("/{roomId}") // 클라이언트에서 특정 publish/roomId 형태로 메시지 발행 시 해당 요청을 수신
     public void sendMessage(@DestinationVariable Long roomId, ChatMessageReqDto chatMessageReqDto) { // modelAttribute가 아니라 @Payload로 객체 등 값을 컨트롤러에서 받는다.
-        log.info("{}", chatMessageReqDto.getMessage());
+
+        log.info("message : {}, sender : {}",
+                chatMessageReqDto.getMessage(), chatMessageReqDto.getSenderEmail());
+
+        chatService.saveMessage(roomId, chatMessageReqDto); // 메시지를 DB에 저장
+
         messageTemplate.convertAndSend("/topic/" + roomId, chatMessageReqDto);
     }
 }
