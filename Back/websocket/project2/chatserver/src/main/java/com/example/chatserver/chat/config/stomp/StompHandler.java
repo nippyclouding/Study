@@ -37,6 +37,20 @@ public class StompHandler implements ChannelInterceptor {
             log.info("connect 요청 시 유효성 검증 완료");
         }
 
+        if (StompCommand.SUBSCRIBE == accessor.getCommand()) {
+            log.info("subscribe 요청 시 유효성 검증 시작");
+            String bearerToken = accessor.getFirstNativeHeader("Authorization"); // 토큰을 꺼낸다.
+            String token = bearerToken.substring(7);
+
+            // 토큰 검증
+            Claims claims = Jwts.parserBuilder() // claims = payload, Authentication 객체를 생성하기 위해 claims 추출
+                    .setSigningKey(secretKey) // secretKey 를 다시 넣어 사용자의 payload, header 부분을 결합
+                    .build()                  // => 다시 암호화를 해서 현재 서버가 생성한 토큰이 맞는지 검증
+                    .parseClaimsJws(token) // 토큰 검증
+                    .getBody(); // 검증이 끝나면 payload 부분을 꺼낸다 (email, role)
+            log.info("subscribe 요청 시 유효성 검증 완료");
+        }
+
         return message;
     }
 }
