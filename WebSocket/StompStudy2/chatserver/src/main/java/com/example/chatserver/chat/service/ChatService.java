@@ -6,6 +6,7 @@ import com.example.chatserver.chat.domain.ChatRoom;
 import com.example.chatserver.chat.domain.ReadStatus;
 import com.example.chatserver.chat.dto.ChatMessageDto;
 import com.example.chatserver.chat.dto.ChatRoomListResDto;
+import com.example.chatserver.chat.dto.MyChatListResDto;
 import com.example.chatserver.chat.repository.ChatMessageRepository;
 import com.example.chatserver.chat.repository.ChatParticipantRepository;
 import com.example.chatserver.chat.repository.ChatRoomRepository;
@@ -182,5 +183,97 @@ public class ChatService {
         }
 
         return dtos;
+    }
+
+    public void messageRead(Long roomId) {
+        // 1. roomId로 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("room cannot be found"));
+
+        // 2. Authentication 객체 조회
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName(); // Authentication 객체로 email 조회
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException
+                        ("member cannot be found")
+        ); // email로 방을 생성한 회원 조회
+
+        // 모든 메시지 읽음 처리
+        List<ReadStatus> readStatuses = readStatusRepository.findByChatRoomAndMember(chatRoom, member);
+        for (ReadStatus r : readStatuses) {
+            // JPA 트랜잭션 속에셔 동작 => 변경 감지 (dirty checking), 별도 update 쿼리가 필요 x
+            r.updateIsRead(true);
+        }
+
+    }
+
+
+    public List<MyChatListResDto> getMyChatRooms() {
+        // 1. 방을 생성한 회원 조회
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName(); // Authentication 객체로 email 조회
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException
+                        ("member cannot be found")
+        ); // email로 방을 생성한 회원 조회
+
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findAllByMember(member);
+        List<MyChatListResDto> dtos = new ArrayList<>();
+        for (ChatParticipant c : chatParticipants) {
+            Long count = readStatusRepository.countByChatRoomAndMemberAndIsReadFalse(c.getChatRoom(), member);
+            MyChatListResDto dto = MyChatListResDto.builder()
+                    .roomId(c.getChatRoom().getId())
+                    .roomName(c.getChatRoom().getName())
+                    .isGroupChat(c.getChatRoom().getIsGroupChat())
+                    .unReadCount(count)
+                    .build();
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+
+    /*
+    채팅을 나갈 때 - 이전 채팅 내역, 읽음 여부는 삭제 x, soft delete
+    1. 참여자 participant 객체 삭제
+    2. 모든 참여자가 나갔을 때 hard delete : 채팅방, 메시지, 읽음 여부 모두 삭제
+     */
+    public void leaveGroupChatRoom(Long roomId) {
+        // 1. roomId로 채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(() -> new EntityNotFoundException("room cannot be found"));
+
+        // 2. Authentication 객체 조회
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName(); // Authentication 객체로 email 조회
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(
+                () -> new EntityNotFoundException
+                        ("member cannot be found")
+        ); // email로 방을 생성한 회원 조회
+
+        // 1:1 채팅일 경우
+        if (chatRoom.getIsGroupChat().equals("N")) {
+            throw new IllegalArgumentException("단체 채팅방이 아닙니다.");
+        }
+
+        ChatParticipant c = chatParticipantRepository.findByChatRoomAndMember(chatRoom, member)
+                .orElseThrow(() -> new EntityNotFoundException("참여자를 찾을 수 없습니다."));
+
+        // 참여자 participant 객체 삭제
+        chatParticipantRepository.delete(c);
+
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+
+        // 모든 참여자가 나갔을 때 : cascade 옵션으로 채팅방, 메시지, 읽음 여부 모두 삭제
+        if (chatParticipants.isEmpty()) {
+            chatRoomRepository.delete(chatRoom);
+        }
     }
 }
