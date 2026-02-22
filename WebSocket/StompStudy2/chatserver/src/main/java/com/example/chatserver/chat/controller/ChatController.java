@@ -84,4 +84,19 @@ public class ChatController {
 
         return ResponseEntity.ok().build();
     }
+
+    /*
+    1:1 채팅 : 채팅방 개설 or 기존 roomId return
+    회원 목록에서 '채팅하기' 를 누를 때 (A가 B에게 '채팅하기' 를 눌렀을 때)
+    1. 기존 1:1 채팅방이 없을 경우 : 채팅방 생성, 두 사람 모두 참여자로 추가
+    2. 기존 1:1 채팅방이 있을 경우 : 기존 채팅방 조회 (A가 '채팅하기'를 눌렀을 때 or B가 '채팅하기'를 눌렀을 때')
+     */
+    @PostMapping("/room/private/create")
+    public ResponseEntity<?> getOrCreatePrivateRoom(@RequestParam Long otherMemberId) {
+        Long roomId = chatService.getOrCreatePrivateRoom(otherMemberId);
+
+        return new ResponseEntity<>(roomId, HttpStatus.OK);
+    }
+
+
 }
