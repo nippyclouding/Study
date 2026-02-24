@@ -2,6 +2,7 @@ package Study.Board.board;
 
 import Study.Board.board.dtos.BoardUpdateDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public List<Board> readAll() {
         return boardRepository.findAll();
@@ -21,6 +23,7 @@ public class BoardService {
 
     @Transactional
     public Board create(Board board) {
+        board.encodePassword(passwordEncoder.encode(board.getPassword()));
         return boardRepository.save(board);
     }
 
@@ -33,6 +36,7 @@ public class BoardService {
     // 변경 감지로 update
     @Transactional
     public Board update(Long boardId, BoardUpdateDto dto) {
+
         Board findBoard = boardRepository.findById(boardId).orElse(null);
         if (findBoard == null) {
             throw new NoSuchElementException("No Board Data");
@@ -44,4 +48,9 @@ public class BoardService {
 
         return findBoard;
     }
+
+    public boolean verifyPassword(Long boardId, String rawPassword) {
+        return passwordEncoder.matches(rawPassword, readDetail(boardId).getPassword());
+    }
+
 }

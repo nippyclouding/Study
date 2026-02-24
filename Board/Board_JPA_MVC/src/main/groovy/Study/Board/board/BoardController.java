@@ -1,8 +1,11 @@
 package Study.Board.board;
 
 import Study.Board.board.dtos.BoardUpdateDto;
+import Study.Board.board.dtos.PasswordVerifyResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -67,16 +70,16 @@ public class BoardController {
     // =============================== UPDATE ===============================
     @PostMapping("/verify/{boardId}")
     @ResponseBody
-    public Map<String, Object> verifyPassword(@PathVariable Long boardId, @RequestBody Map<String, String> payload) {
-        Board board = boardService.readDetail(boardId);
+    public ResponseEntity<?> verifyPassword(@PathVariable Long boardId, @RequestBody Map<String, String> payload) {
+
         String inputPassword = payload.get("password");
-        boolean isMatch = board.getPassword().equals(inputPassword);
+        boolean isMatch = boardService.verifyPassword(boardId, inputPassword);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("match", isMatch);
+        PasswordVerifyResponseDto dto = new PasswordVerifyResponseDto(isMatch);
 
-        return response;
+        return ResponseEntity.ok(dto);
     }
+
 
     @GetMapping("/update/{boardId}")
     public String updateBoard(@PathVariable Long boardId, Model model) {
@@ -94,6 +97,4 @@ public class BoardController {
         return "redirect:/board/" + boardId;
     }
     // =============================== UPDATE ===============================
-
-
 }

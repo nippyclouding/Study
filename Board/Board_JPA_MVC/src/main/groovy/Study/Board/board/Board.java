@@ -1,12 +1,10 @@
 package Study.Board.board;
 
 
+import Study.Board.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -16,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Board {
+public class Board extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
@@ -30,22 +28,19 @@ public class Board {
     @NotBlank
     private String password;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
     public Board(String password, String title, String content) {
         this.password = password;
         this.title = title;
         this.content = content;
-        createdAt = LocalDateTime.now();
     }
 
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
-        updatedAt = LocalDateTime.now();
+    }
+
+    public void encodePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }
