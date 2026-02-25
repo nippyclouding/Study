@@ -1,4 +1,4 @@
-package spring.batch.cafe;
+package spring.batch.batchBasic;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.job.Job;

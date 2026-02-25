@@ -1,4 +1,4 @@
-package spring.batch.lowerToupper;
+package spring.batch.chunk;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.job.Job;

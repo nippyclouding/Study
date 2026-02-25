@@ -1,4 +1,4 @@
-package spring.batch.file;
+package spring.batch.jobParam;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.job.Job;
@@ -6,33 +6,29 @@ import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @RequiredArgsConstructor
-public class FileCleanUpConfig {
+public class DatePrintJobConfig {
+
     private final JobRepository jobRepository;
     private final PlatformTransactionManager txManager;
+    private final DatePrintTasklet tasklet;
 
     @Bean
-    public Tasklet fileCleanUpTasklet() {
-        return new FileCleanUpTasklet("./test-logs", 30);
-    }
-
-    @Bean
-    public Job fileCleanUpJob() {
-        return new JobBuilder("fileCleanUpJob", jobRepository)
-                .start(fileCleanUpStep())
+    public Job datePrintJob() {
+        return new JobBuilder("datePrintJob", jobRepository)
+                .start(datePrintStep())
                 .build();
     }
 
     @Bean
-    public Step fileCleanUpStep() {
-        return new StepBuilder("fileCleanUpStep", jobRepository)
-                .tasklet(fileCleanUpTasklet(), txManager)
+    public Step datePrintStep() {
+        return new StepBuilder("datePrintStep", jobRepository)
+                .tasklet(tasklet, txManager)
                 .build();
     }
 }
