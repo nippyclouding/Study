@@ -16,15 +16,17 @@
             작성일 : <span th:text="${board.createdAt}"></span> <br>
             글 번호 : <span th:text="${board.id}"></span> <br>
 
-            <div>
-                <input type="password" id="password" placeholder="수정 비밀번호 입력">
-                <button type="button"
-                        th:data-id="${board.id}"
-                        onclick="verifyPassword(this)"> 수정
-                </button> <br>
+                <div style="margin-top: 10px;">
+                    <input type="password" id="commonPassword" placeholder="비밀번호 입력">
 
+                    <button type="button"
+                            th:data-id="${board.id}"
+                            onclick="verifyPassword(this, 'update')">수정</button>
 
-            </div>
+                    <button type="button"
+                            th:data-id="${board.id}"
+                            onclick="verifyPassword(this, 'delete')">삭제</button>
+                </div>
         </div>
     </div>
 

@@ -1,7 +1,12 @@
 package Study.Board.board;
 
 import Study.Board.board.dtos.BoardUpdateDto;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,4 +58,14 @@ public class BoardService {
         return passwordEncoder.matches(rawPassword, readDetail(boardId).getPassword());
     }
 
+    @Transactional
+    public void removeBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException("no entity"));
+        boardRepository.delete(board);
+    }
+
+    public Page<Board> readAllByPage(int page) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
+        return boardRepository.findAll(pageable);
+    }
 }

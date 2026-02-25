@@ -4,7 +4,7 @@ import Study.Board.board.dtos.BoardUpdateDto;
 import Study.Board.board.dtos.PasswordVerifyResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -32,10 +30,12 @@ public class BoardController {
 
     // =============================== READ ===============================
     @GetMapping // 페이징 x
-    public String readAll(Model model) {
-        List<Board> boards = boardService.readAll();
+    public String readAll(Model model, @RequestParam(value = "page", defaultValue = "0") int page) {
+        Page<Board> boards = boardService.readAllByPage(page);
 
-        model.addAttribute("boards", boards);
+        // List<Board> boards = boardService.readAll();
+
+        model.addAttribute("boardPage", boards);
         return "main";
     }
 
@@ -97,4 +97,12 @@ public class BoardController {
         return "redirect:/board/" + boardId;
     }
     // =============================== UPDATE ===============================
+
+    // =============================== DELETE ===============================
+    @PostMapping("/delete/{boardId}")
+    public String deleteBoard(@PathVariable Long boardId) {
+        boardService.removeBoard(boardId);
+        return "redirect:/";
+    }
+    // =============================== DELETE ===============================
 }

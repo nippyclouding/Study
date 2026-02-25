@@ -2,37 +2,61 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>게시판</title>
+    <style>
+        .pagination { display: flex; list-style: none; gap: 10px; padding: 0; }
+        .active { font-weight: bold; text-decoration: underline; }
+        .disabled { color: gray; pointer-events: none; }
+    </style>
 </head>
 <body>
 <h1>게시판</h1> <br>
 
-    <div>
-        <table>
-            <thead>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성일</th>
-            </thead>
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일</th>
+        </tr>
+        </thead>
 
-            <tbody>
-                <tr th:each="board : ${boards}">
-                    <td th:text="${board.id}"></td>
-                    <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
-                    <td th:text="${board.createdAt}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <tbody>
+        <tr th:each="board : ${boardPage.content}">
+            <td th:text="${board.id}"></td>
+            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
+            <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
-    <div>
-        <a href="/create">
-            <button type="button">게시판 작성</button>
-        </a>
-    </div>
+<div th:if="${boardPage.totalPages > 0}">
+    <ul class="pagination">
+        <li>
+            <a th:href="@{/main(page=${boardPage.number - 1})}"
+               th:classappend="${boardPage.first} ? 'disabled'">이전</a>
+        </li>
+
+        <li th:each="pageIdx : ${#numbers.sequence(0, boardPage.totalPages - 1)}">
+            <a th:href="@{/main(page=${pageIdx})}"
+               th:text="${pageIdx + 1}"
+               th:classappend="${pageIdx == boardPage.number} ? 'active'"></a>
+        </li>
+
+        <li>
+            <a th:href="@{/main(page=${boardPage.number + 1})}"
+               th:classappend="${boardPage.last} ? 'disabled'">다음</a>
+        </li>
+    </ul>
+</div>
+
+<div>
+    <a href="/create">
+        <button type="button">게시판 작성</button>
+    </a>
+</div>
 
 </body>
 </html>
