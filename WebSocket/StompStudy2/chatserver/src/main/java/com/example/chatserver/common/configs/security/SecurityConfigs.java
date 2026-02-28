@@ -1,4 +1,4 @@
-package com.example.chatserver.common.configs;
+package com.example.chatserver.common.configs.security;
 
 import com.example.chatserver.common.auth.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;

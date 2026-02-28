@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ChatMessageDto {
     // 요청, 응답 모두 사용되는 dto
+    private Long roomId;
     private String message;
     private String senderEmail;
 }
