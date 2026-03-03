@@ -12,6 +12,6 @@ public class GuestBookController {
     @GetMapping("/")
     public String list() {
         log.info("list....");
-        return "/guestBook/list";
+        return "guestBook/list";
     }
 }

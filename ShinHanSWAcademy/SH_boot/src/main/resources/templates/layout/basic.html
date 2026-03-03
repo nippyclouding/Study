@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="">
+<th:block th:fragment="setContent(content)">
+    <head>
+        <meta charset="UTF-8">
+        <title>GuestBook Project</title>
+        <link href="" rel="stylesheet">
+    </head>
+    <body>
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">GuestBook App</a>
+        </div>
+    </nav>
+    <div class="container">
+        <th:block th:replace="${content}"></th:block>
+    </div>
+    </body>
+</th:block>
+</html>

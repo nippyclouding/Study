@@ -7,10 +7,8 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 @Entity
-@Builder
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
 public class GuestBook extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +19,12 @@ public class GuestBook extends BaseEntity {
     private String content;
 
     private String writer;
+
+    @Builder // 2. 필요한 필드만 포함하는 생성자에 빌더 적용
+    public GuestBook(String title, String content, String writer) {
+        this.title = title;
+        this.content = content;
+        this.writer = writer;
+    }
 
 }

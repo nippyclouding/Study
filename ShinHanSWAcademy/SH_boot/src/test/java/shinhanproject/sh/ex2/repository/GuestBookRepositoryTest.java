@@ -23,8 +23,7 @@ class GuestBookRepositoryTest {
 
     @Test
     void test() {
-
-        IntStream.rangeClosed(1, 300).forEach(i -> {
+        IntStream.rangeClosed(1, 300).forEach(i -> { // 300개의 더미 데이터를 생성한다.
             GuestBook guestBook = GuestBook.builder()
                     .title("Title..." + i)
                     .content("Content ... " + i)
