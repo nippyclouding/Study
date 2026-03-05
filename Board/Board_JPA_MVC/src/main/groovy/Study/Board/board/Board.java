@@ -1,10 +1,10 @@
 package Study.Board.board;
 
 
+import Study.Board.board.dtos.BoardUpdateReqDto;
 import Study.Board.comment.Comment;
 import Study.Board.common.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -20,16 +20,13 @@ public class Board extends BaseEntity {
     @Column(name = "board_id")
     private Long id;
 
-    @NotBlank
     private String title;
 
-    @NotBlank
     private String content;
 
-    @NotBlank
     private String password;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.REMOVE, orphanRemoval = true) // 1:N 은 기본값이 지연 로딩
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
@@ -39,9 +36,9 @@ public class Board extends BaseEntity {
         this.content = content;
     }
 
-    public void update(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public void update(BoardUpdateReqDto dto) {
+        this.title = dto.getTitle();
+        this.content = dto.getContent();
     }
 
     public void addComment(Comment comment) {

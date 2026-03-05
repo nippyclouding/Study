@@ -1,6 +1,7 @@
 package Study.Board.comment;
 
 import Study.Board.board.Board;
+import Study.Board.comment.dtos.CommentUpdateReqDto;
 import Study.Board.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +32,10 @@ public class Comment extends BaseEntity {
 
     public void setBoard(Board board) {
         this.board = board;
+    }
+
+    public void update(CommentUpdateReqDto dto) {
+        this.comment = dto.getComment();
     }
 
     public void encodePassword(String encodedPassword) {

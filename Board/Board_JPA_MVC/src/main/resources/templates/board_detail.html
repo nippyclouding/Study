@@ -14,17 +14,17 @@
         <h1 th:text="${board.title}"></h1>
         <div>
             작성일 : <span th:text="${board.createdAt}"></span> <br>
-            글 번호 : <span th:text="${board.id}"></span> <br>
+            글 번호 : <span th:text="${board.boardId}"></span> <br>
 
                 <div style="margin-top: 10px;">
                     <input type="password" id="commonPassword" placeholder="비밀번호 입력">
 
                     <button type="button"
-                            th:data-id="${board.id}"
+                            th:data-id="${board.boardId}"
                             onclick="verifyPassword(this, 'update')">수정</button>
 
                     <button type="button"
-                            th:data-id="${board.id}"
+                            th:data-id="${board.boardId}"
                             onclick="verifyPassword(this, 'delete')">삭제</button>
                 </div>
         </div>

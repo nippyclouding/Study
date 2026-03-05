@@ -1,6 +1,8 @@
 package Study.Board.board;
 
-import Study.Board.board.dtos.BoardUpdateDto;
+import Study.Board.board.dtos.BoardReadResDto;
+import Study.Board.board.dtos.BoardSaveReqDto;
+import Study.Board.board.dtos.BoardUpdateReqDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,10 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -22,50 +20,74 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public List<Board> readAll() {
-        return boardRepository.findAll();
-    }
-
     @Transactional
-    public Board create(Board board) {
+    public BoardReadResDto save(BoardSaveReqDto dto) {
+        Board board = dtoToEntity(dto);
         board.encodePassword(passwordEncoder.encode(board.getPassword()));
-        return boardRepository.save(board);
+        return entityToDtoForView(boardRepository.save(board));
     }
 
-    public Board readDetail(Long boardId) {
-        return boardRepository.findById(boardId).orElseThrow(
-                () -> new NoSuchElementException("No Board Data")
+    public BoardReadResDto findByIdDto(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new EntityNotFoundException("cannot find board")
         );
+        return entityToDtoForView(board);
+    }
+
+    public Page<BoardReadResDto> findAllByPageDto(int page) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Board> boards = boardRepository.findAll(pageable);
+        Page<BoardReadResDto> boardReadDtos = entitiesToDtosForView(boards);
+        return boardReadDtos;
     }
 
     // 변경 감지로 update
     @Transactional
-    public Board update(Long boardId, BoardUpdateDto dto) {
-
-        Board findBoard = boardRepository.findById(boardId).orElse(null);
-        if (findBoard == null) {
-            throw new NoSuchElementException("No Board Data");
-        }
-
+    public void update(Long boardId, BoardUpdateReqDto dto) {
+        Board findBoard = boardRepository.findById(boardId).orElseThrow(() ->
+                new EntityNotFoundException("cannot find board"));
         // 영속성 컨텍스트에서 영속화된 엔티티를 확인 후 변경이 있다면 쓰기 지연 저장소에 update 쿼리를 넣는다.
         // 트랜잭션 종료 시 쓰기 지연 저장소의 update 쿼리가 DB에 전달된다.
-        findBoard.update(dto.getTitle(), dto.getContent());
-
-        return findBoard;
-    }
-
-    public boolean verifyPassword(Long boardId, String rawPassword) {
-        return passwordEncoder.matches(rawPassword, readDetail(boardId).getPassword());
+        findBoard.update(dto);
     }
 
     @Transactional
-    public void removeBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException("no entity"));
+    public void delete(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new EntityNotFoundException("cannot find board"));
         boardRepository.delete(board);
     }
 
-    public Page<Board> readAllByPage(int page) {
-        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        return boardRepository.findAll(pageable);
+    public boolean verifyPassword(Long boardId, String rawPassword) {
+        return passwordEncoder.matches(rawPassword, boardRepository.findById(boardId).orElseThrow(() ->
+            new EntityNotFoundException("cannot find board"))
+                .getPassword());
+    }
+
+    private BoardReadResDto entityToDtoForView(Board board) {
+        return BoardReadResDto.builder()
+                .boardId(board.getId())
+                .content(board.getContent())
+                .title(board.getTitle())
+                .createdAt(board.getCreatedAt())
+                .updatedAt(board.getUpdatedAt())
+                .build();
+    }
+
+    private Page<BoardReadResDto> entitiesToDtosForView(Page<Board> boards) {
+        return boards.map(b -> BoardReadResDto.builder()
+                .boardId(b.getId())
+                .title(b.getTitle())
+                .content(b.getContent())
+                .createdAt(b.getCreatedAt())
+                .updatedAt(b.getUpdatedAt())
+                .build());
+    }
+
+    private Board dtoToEntity(BoardSaveReqDto dto) {
+        return Board.builder()
+                .title(dto.getTitle())
+                .content(dto.getContent())
+                .password(dto.getPassword())
+                .build();
     }
 }

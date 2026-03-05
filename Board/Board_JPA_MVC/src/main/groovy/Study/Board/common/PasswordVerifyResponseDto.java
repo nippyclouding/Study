@@ -1,4 +1,4 @@
-package Study.Board.board.dtos;
+package Study.Board.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

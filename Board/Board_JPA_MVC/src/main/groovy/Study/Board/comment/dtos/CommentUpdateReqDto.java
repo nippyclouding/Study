@@ -1,5 +1,6 @@
-package Study.Board.board.dtos;
+package Study.Board.comment.dtos;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardUpdateDto {
-    private String title;
-    private String content;
+public class CommentUpdateReqDto {
+    @NotBlank
+    private String comment;
 }

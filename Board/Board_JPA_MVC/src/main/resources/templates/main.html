@@ -24,8 +24,8 @@
 
         <tbody>
         <tr th:each="board : ${boardPage.content}">
-            <td th:text="${board.id}"></td>
-            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}"></a></td>
+            <td th:text="${board.boardId}"></td>
+            <td><a th:href="@{/board/{id}(id=${board.boardId})}" th:text="${board.title}"></a></td>
             <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}"></td>
         </tr>
         </tbody>
@@ -35,18 +35,18 @@
 <div th:if="${boardPage.totalPages > 0}">
     <ul class="pagination">
         <li>
-            <a th:href="@{/main(page=${boardPage.number - 1})}"
+            <a th:href="@{/(page=${boardPage.number - 1})}"
                th:classappend="${boardPage.first} ? 'disabled'">이전</a>
         </li>
 
         <li th:each="pageIdx : ${#numbers.sequence(0, boardPage.totalPages - 1)}">
-            <a th:href="@{/main(page=${pageIdx})}"
+            <a th:href="@{/(page=${pageIdx})}"
                th:text="${pageIdx + 1}"
                th:classappend="${pageIdx == boardPage.number} ? 'active'"></a>
         </li>
 
         <li>
-            <a th:href="@{/main(page=${boardPage.number + 1})}"
+            <a th:href="@{/(page=${boardPage.number + 1})}"
                th:classappend="${boardPage.last} ? 'disabled'">다음</a>
         </li>
     </ul>
