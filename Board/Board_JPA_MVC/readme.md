@@ -6,4 +6,3 @@
 3. 댓글 기능 - 엔티티까지 구현// 서비스 -> 리포지토리 -> 컨트롤러 설계하기 : 완료
 4. 댓글 기능, 게시판 기능 모두 dto로 request, response : 완료
 5. 뷰 템플릿 구현
-6. n + 1 - commentRepository.findByBoardId()
