@@ -1,15 +1,13 @@
 package Study.Board.comment.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor (access = AccessLevel.PROTECTED)
 public class CommentUpdateReqDto {
     @NotBlank
     private String comment;
