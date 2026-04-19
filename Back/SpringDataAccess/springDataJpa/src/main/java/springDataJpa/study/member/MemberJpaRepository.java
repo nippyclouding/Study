@@ -25,7 +25,7 @@ public class MemberJpaRepository {
 
     // 리스트 전체 조회
     public List<Member> findAll() {
-        return em.createQuery("select m from Member m", Member.class).getResultList()
+        return em.createQuery("select m from Member m", Member.class).getResultList();
     }
 
     // pk로 단건 조회 (데이터가 반드시 있을 경우)
@@ -41,7 +41,7 @@ public class MemberJpaRepository {
 
     // 데이터 수 조회
     public long count() {
-        return em.createQuery("select count(m) from Member m", Long.class).getSingleResult()
+        return em.createQuery("select count(m) from Member m", Long.class).getSingleResult();
     }
 
 }
