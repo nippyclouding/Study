@@ -1,5 +1,7 @@
 package springDataJpa.study.member;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
 
     @Autowired MemberRepository memberRepository;
+    @PersistenceContext
+    EntityManager em;
     @Test
     void findByAge() throws Exception {
         // given
@@ -61,5 +65,20 @@ class MemberRepositoryTest {
         // @Modifying(clearAutomatically = true) : update 이후 영속성 컨텍스트 초기화
 
         Assertions.assertThat(resultCount).isEqualTo(3);
+    }
+
+    @Test
+    void lock() {
+        //given
+        Member member = new Member(10, "member1");
+        memberRepository.save(member);
+        em.flush();
+        em.clear();
+
+        //when
+        // select for update
+        List<Member> members = memberRepository.findLockByUsername("member1");
+        Member findMember = members.get(0);
+
     }
 }
