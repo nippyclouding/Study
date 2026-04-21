@@ -81,4 +81,16 @@ class MemberRepositoryTest {
         Member findMember = members.get(0);
 
     }
+    
+    @Test
+    void customTest() {
+        //given
+        List<Member> memberCustom = memberRepository.findMemberCustom();
+
+        //when
+        for (Member m : memberCustom) System.out.println("m.getId() = " + m.getId());
+        
+        //then
+        
+    }
 }

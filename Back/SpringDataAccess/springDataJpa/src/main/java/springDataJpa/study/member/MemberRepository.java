@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
     Page<Member> findByAge(int age, Pageable pageable);
 
     @Modifying(clearAutomatically = true) // update 이후 영속성 컨텍스트 초기화
