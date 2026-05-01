@@ -49,6 +49,7 @@ public class QuerydslBasicTest {
         // 쓰기 지연 저장소에 insert 쿼리 저장 (team A, B, member 1, 2, 3, 4), flush
     }
 
+    // JPQL 사용 시 단점
     @Test
     void JPQL() {
         // given
@@ -63,6 +64,7 @@ public class QuerydslBasicTest {
         Assertions.assertThat(findMember.getUsername()).isEqualTo("member1");
     }
 
+    // QueryDSL 사용 시 장점 - 타입 안정성
     @Test
     void queryDsl() {
         // given
